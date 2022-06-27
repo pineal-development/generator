@@ -19,7 +19,7 @@ class FileGenerator
 
             if (stripos($file->filename, 'Facade') !== false) {
                 $neon = Neon::decodeFile(self::FACADES_CONFIG);
-                $neon['services'][lcfirst($file->filename)] = [
+                $neon['services'][lcfirst(str_replace('.php', '', $file->filename))] = [
                     'class' => 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename),
                     'inject' => true,
                 ];

@@ -44,22 +44,6 @@
         {
             "type": "ko-fi",
             "url": "https://ko-fi.com/matronator"
-        },
-        {
-            "type": "bitcoin",
-            "url": "bitcoin://35VRpVQaqFWjUCnVRpGineShz76QyYgSVg"
-        },
-        {
-            "type": "ethereum",
-            "url": "ethereum://0x9981F23fA0374D5A194c2eC1F32093C473c818b9"
-        },
-        {
-            "type": "litecoin",
-            "url": "litecoin://ltc1q9nzu3a4gg240le0e7tch02d5j48arf2zgdz88q"
-        },
-        {
-            "type": "monero",
-            "url": "monero://84yS17W3dLvV6Lj2XaATgYX4Ef7tPpGtmdBoanyL68GofxM2VQD8ZUNWaKpdyerJdZ7mceQ6r7e8G2om6q6k8zEZ4ndy2xG"
         }
     ]
 }

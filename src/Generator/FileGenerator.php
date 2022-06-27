@@ -17,7 +17,7 @@ class FileGenerator
         foreach ($files as $file) {
             file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
 
-            if (stripos($file->filename, 'Facade') !== false) {
+            if (str_contains($file->filename, 'Facade')) {
                 $neon = Neon::decodeFile(self::FACADES_CONFIG);
                 $neon['services'][lcfirst(str_replace('.php', '', $file->filename))] = [
                     'class' => 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename),

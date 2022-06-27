@@ -22,7 +22,10 @@ class Repository
         $namespace->addUse('Doctrine\ORM\QueryBuilder');
 
         $class = $namespace->addClass($name.'Repository')
-            ->setExtends('App\Model\Database\Repository\AbstractRepository');
+            ->setExtends('App\Model\Database\Repository\AbstractRepository')
+            ->addComment('@method '.$name.'|NULL find($id, ?int $lockMode = NULL, ?int $lockVersion = NULL)')
+            ->addComment('@method '.$name.'|NULL findOneBy(array $criteria, array $orderBy = NULL)')
+            ->addComment('@method '.$name.'[] findBy(array $criteria, array $orderBy = NULL, ?int $limit = NULL, ?int $offset = NULL)');
 
         $class->addMethod('findAllForDataGrid')
             ->setReturnType('Doctrine\ORM\QueryBuilder')

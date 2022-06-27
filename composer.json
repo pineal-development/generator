@@ -1,28 +1,65 @@
 {
     "name": "matronator/generator",
+    "description": "Automatically generate Entity and related files from the console.",
     "type": "library",
+    "keywords": ["generator", "file generator", "php-generator"],
     "license": "MIT",
-    "version": "1.0",
+    "version": "1.0.0",
+    "readme": "README.md",
     "autoload": {
         "psr-4": {
             "Matronator\\Generator\\": ["src/Generator/"]
         }
     },
+    "bin": "bin/mtrgen",
     "authors": [
         {
             "name": "Matronator",
-            "email": "5470780+matronator@users.noreply.github.com"
+            "email": "5470780+matronator@users.noreply.github.com",
+            "homepage": "https://matronator.com",
+            "role": "Developer"
         }
     ],
     "require": {
         "php": ">=7.4",
         "nette/php-generator": "^3.0",
-        "symfony/console": "^5.4"
+        "symfony/console": "^5.4",
+        "composer-runtime-api": "^2.2"
     },
     "minimum-stability": "stable",
     "config": {
         "platform": {
 			"php": "7.4"
 		}
-    }
+    },
+    "funding": [
+        {
+            "type": "patreon",
+            "url": "https://www.patreon.com/bePatron?u=34136375"
+        },
+        {
+            "type": "paypal",
+            "url": "https://www.paypal.com/paypalme/matronator"
+        },
+        {
+            "type": "ko-fi",
+            "url": "https://ko-fi.com/matronator"
+        },
+        {
+            "type": "bitcoin",
+            "url": "bitcoin://35VRpVQaqFWjUCnVRpGineShz76QyYgSVg"
+        },
+        {
+            "type": "ethereum",
+            "url": "ethereum://0x9981F23fA0374D5A194c2eC1F32093C473c818b9"
+        },
+        {
+            "type": "litecoin",
+            "url": "litecoin://ltc1q9nzu3a4gg240le0e7tch02d5j48arf2zgdz88q"
+        },
+        {
+            "type": "monero",
+            "url": "monero://84yS17W3dLvV6Lj2XaATgYX4Ef7tPpGtmdBoanyL68GofxM2VQD8ZUNWaKpdyerJdZ7mceQ6r7e8G2om6q6k8zEZ4ndy2xG"
+        }
+    ]
 }

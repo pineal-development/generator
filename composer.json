@@ -1,0 +1,21 @@
+{
+    "name": "matronator/generator",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Matronator\\Generator\\": ["src/Generator/"]
+        }
+    },
+    "authors": [
+        {
+            "name": "Matronator",
+            "email": "5470780+matronator@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "nette/php-generator": "^4.0",
+        "symfony/console": "^6.1"
+    },
+    "minimum-stability": "stable"
+}

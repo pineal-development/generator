@@ -20,7 +20,7 @@ class FileGenerator
             if (stripos($file->filename, 'Facade') !== false) {
                 $neon = Neon::decodeFile(self::FACADES_CONFIG);
                 $neon['services'][lcfirst($file->filename)] = [
-                    'class' => 'App\Model\Database\Facade\\' . $file->filename,
+                    'class' => 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename),
                     'inject' => true,
                 ];
                 file_put_contents('nette.safe://'.self::FACADES_CONFIG, Neon::encode($neon, Neon::BLOCK));

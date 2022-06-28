@@ -9,7 +9,7 @@ if (!is_file($root_app . '/vendor/autoload.php')) {
     $root_app = dirname(__DIR__, 4);
 }
 
-require_once $_composer_autoload_path ?? $root_app . '/vendor/autoload.php';
+require_once $root_app . '/vendor/autoload.php';
 
 use Matronator\Generator\Entity;
 use Matronator\Generator\Facade;

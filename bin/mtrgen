@@ -14,6 +14,7 @@ require_once $root_app . '/vendor/autoload.php';
 use Matronator\Generator\Entity;
 use Matronator\Generator\Facade;
 use Matronator\Generator\FileGenerator;
+use Matronator\Generator\FormControl;
 use Matronator\Generator\Repository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,17 +29,20 @@ function command(InputInterface $input, OutputInterface $output)
     $file = null;
     // if ($type == 'facade') {
     // }
+    $output->writeln('Generating...');
+
     $facade = Facade::generate($name);
     $repository = Repository::generate($name);
     $entity = Entity::generate($name);
+    $control = FormControl::generate($name);
 
-    FileGenerator::writeFile($facade, $repository, $entity);
+    FileGenerator::writeFile($facade, $repository, $entity, $control);
 
-    $output->writeln('Generating...');
+    $output->writeln('Generated!');
 }
 
 (new SingleCommandApplication())
-    ->setName('Joke Fetcher')
+    ->setName('File Generator')
     ->addOption(
         'type', 't',
         InputOption::VALUE_OPTIONAL,

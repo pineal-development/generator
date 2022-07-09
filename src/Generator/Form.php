@@ -16,14 +16,14 @@ class Form
 {
     public const DIR_PATH = 'app/ui/Form/';
 
-    public const FIELD_TYPE_TEXT = 'Text';
-    public const FIELD_TYPE_SELECT = 'Select';
-    public const FIELD_TYPE_SUBMIT = 'Submit';
     public const FIELD_TYPE_CHECKBOX = 'Checkbox';
+    public const FIELD_TYPE_EMAIL = 'Email';
     public const FIELD_TYPE_FLOAT = 'Float';
     public const FIELD_TYPE_INTEGER = 'Integer';
-    public const FIELD_TYPE_EMAIL = 'Email';
     public const FIELD_TYPE_PASSWORD = 'Password';
+    public const FIELD_TYPE_SELECT = 'Select';
+    public const FIELD_TYPE_SUBMIT = 'Submit';
+    public const FIELD_TYPE_TEXT = 'Text';
 
     private string $name;
     private ?string $entity;
@@ -48,30 +48,39 @@ class Form
 
         $this->file->setStrictTypes();
 
-        $this->namespace = $this->file->addNamespace('App\UI\Form' . ($entity ? "\\$entity" : ''));
+        $this->namespace = $this->file->addNamespace('App\UI\Form' . ($this->entity ? "\\$entity" : ''));
         $this->namespace->addUse('App\UI\Form\BaseForm');
 
-        $this->class = $this->namespace->addClass($name.'Form')
+        $this->class = $this->namespace->addClass($this->name.'Form')
             ->setFinal()
             ->setExtends('App\UI\Form\BaseForm');
 
         $this->injectMethod = $this->class->addMethod('inject'.$name.'Form')
             ->setReturnType('void');
 
-        foreach ($fields as $field) {
+        foreach ($this->fields as $field) {
             $this->addField($field->type, $field->name, $field->label, $field->options);
         }
+    }
+
+    public function output(): FileObject
+    {
+        return new FileObject(self::DIR_PATH . ($this->entity ? "{$this->entity}/" : ''), $this->name.'Form', $this->file, $this->entity);
     }
 
     /**
      * @return static
      */
-    public function addField(string $type, string $name, string $label, FormFieldOptions $options): self
+    public function addField(string $type, string $name, string $label, ?FormFieldOptions $options = null): self
     {
-        $this->injectMethod->addBody('$this->add'.$type.'(\''.$name.'\', $this->translator->translate(\''.$label.'\'))');
-        $optionsArray = get_object_vars($options);
+        $optionsArray = $options !== null ? get_object_vars($options) : [];
+        if ($optionsArray === []) {
+            $this->injectMethod->addBody('$this->add'.$type.'(\''.$name.'\', $this->translator->translate(\''.$label.'\'));'.PHP_EOL);
+        } else {
+            $this->injectMethod->addBody('$this->add'.$type.'(\''.$name.'\', $this->translator->translate(\''.$label.'\'))');
+        }
         foreach ($optionsArray as $key => $value) {
-            $body = '->set';
+            $body = '    ->set';
             switch ($key) {
                 case 'required':
                 case 'ommited':
@@ -88,7 +97,7 @@ class Form
                     break;
             }
             if ($key === array_key_last($optionsArray)) {
-                $body .= ';';
+                $body .= ';'.PHP_EOL;
             }
             $this->injectMethod->addBody($body);
         }
@@ -96,37 +105,37 @@ class Form
         return $this;
     }
 
-    public static function generate(string $name, string $entity = null)
-    {
-        $file = new PhpFile;
+    // public static function generate(string $name, string $entity = null)
+    // {
+    //     $file = new PhpFile;
 
-        $file->setStrictTypes();
+    //     $file->setStrictTypes();
 
-        $namespace = $file->addNamespace('App\UI\Form' . ($entity ? "\\$entity" : ''));
-        $namespace->addUse('App\UI\Form\BaseForm');
-        if ($entity) {
-            $namespace->addUse('App\Model\Database\Facade\\'.ucfirst($entity).'Facade');
-        }
+    //     $namespace = $file->addNamespace('App\UI\Form' . ($entity ? "\\$entity" : ''));
+    //     $namespace->addUse('App\UI\Form\BaseForm');
+    //     if ($entity) {
+    //         $namespace->addUse('App\Model\Database\Facade\\'.ucfirst($entity).'Facade');
+    //     }
 
-        $class = $namespace->addClass($name.'Form')
-            ->setFinal()
-            ->setExtends('App\UI\Form\BaseForm');
+    //     $class = $namespace->addClass($name.'Form')
+    //         ->setFinal()
+    //         ->setExtends('App\UI\Form\BaseForm');
 
-        if ($entity) {
-            $class->addProperty(lcfirst($entity).'Facade')
-                ->setType('App\Model\Database\Facade\\'.ucfirst($entity).'Facade')
-                ->addComment("@var {$entity}Facade");
-        }
-        $injectMethod = $class->addMethod('inject'.$name.'Form')
-            ->setReturnType('void');
+    //     if ($entity) {
+    //         $class->addProperty(lcfirst($entity).'Facade')
+    //             ->setType('App\Model\Database\Facade\\'.ucfirst($entity).'Facade')
+    //             ->addComment("@var {$entity}Facade");
+    //     }
+    //     $injectMethod = $class->addMethod('inject'.$name.'Form')
+    //         ->setReturnType('void');
 
-        if ($entity) {
-            $injectMethod->addParameter(lcfirst($entity).'Facade')
-                ->setType('App\Model\Database\Facade\\'.ucfirst($entity).'Facade');
+    //     if ($entity) {
+    //         $injectMethod->addParameter(lcfirst($entity).'Facade')
+    //             ->setType('App\Model\Database\Facade\\'.ucfirst($entity).'Facade');
 
-            $injectMethod->addBody('$this->'.lcfirst($entity).'Facade = $'.lcfirst($entity).'Facade;');
-        }
+    //         $injectMethod->addBody('$this->'.lcfirst($entity).'Facade = $'.lcfirst($entity).'Facade;');
+    //     }
 
-        return new FileObject(self::DIR_PATH, $name.'Form', $file);
-    }
+    //     return new FileObject(self::DIR_PATH, $name.'Form', $file);
+    // }
 }

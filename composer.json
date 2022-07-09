@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["generator", "file generator", "php-generator"],
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "readme": "README.md",
     "autoload": {
         "psr-4": {
@@ -25,7 +25,8 @@
         "nette/php-generator": "^3.0",
         "symfony/console": "^5.4",
         "nette/neon": "^3.3",
-        "nette/safe-stream": "^2.5"
+        "nette/safe-stream": "^2.5",
+        "symfony/yaml": "^5.4"
     },
     "minimum-stability": "stable",
     "config": {

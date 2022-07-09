@@ -14,7 +14,7 @@ class FormField
 
     public FormFieldOptions $options;
 
-    public function __construct(string $type, string $name, string $label, FormFieldOptions $options)
+    public function __construct(string $type, string $name, string $label, ?FormFieldOptions $options = null)
     {
         $this->type = $type;
         $this->name = $name;

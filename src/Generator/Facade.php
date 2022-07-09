@@ -11,7 +11,7 @@ class Facade
 {
     public const DIR_PATH = 'app/model/Database/Facade/';
 
-    public static function generate(string $name)
+    public static function generate(string $name): FileObject
     {
         $file = new PhpFile;
 

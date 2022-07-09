@@ -1,4 +1,38 @@
-forms:
-  Test:
+model:
+  name: Generated
+  generate: all
+  # Or you can specify the files you want to generate as an array
+  # generate:
+  #   - Entity
+  #   - Repository
+  #   - Facade
+ui:
+  name: Testing
+  entity: Generated
+  generate: control
+  form:
     fields:
-      text:
+    # Available field types: Checkbox, Email, Float, Integer, Password, Select, Submit, Text
+    - type: Text
+      name: input
+      label: general.form.input
+      options:
+        # Possible options:
+        # disabled: true|false
+        # ommited: true|false
+        # nullable: true|false
+        # defaultValue: mixed
+        # caption: string
+        # HtmlId: string
+        required: true
+        defaultValue: value
+    - type: Checkbox
+      name: terms
+      label: general.form.terms
+      options:
+        ommited: true
+        nullable: true
+        htmlId: terms-checkbox
+    - type: Submit
+      name: save
+      label: general.form.submit

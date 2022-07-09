@@ -14,8 +14,12 @@ class FormFieldOptions
     public string $caption;
     public string $htmlId;
 
-    public function __construct(array $options)
+    /**
+     * @param array|object $options
+     */
+    public function __construct(mixed $options)
     {
+        $options = (array) $options;
         $properties = get_class_vars(__CLASS__);
         foreach ($properties as $prop => $default) {
             if (key_exists($prop, $options)) {

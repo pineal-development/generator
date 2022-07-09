@@ -11,6 +11,7 @@ if (!is_file($root_app . '/vendor/autoload.php')) {
 
 require_once $root_app . '/vendor/autoload.php';
 
+use Matronator\Generator\Config\Configurator;
 use Matronator\Generator\Entity;
 use Matronator\Generator\Facade;
 use Matronator\Generator\FileGenerator;
@@ -26,17 +27,31 @@ function command(InputInterface $input, OutputInterface $output)
 {
     $type = $input->getOption('type');
     $name = $input->getArgument('name');
-    $file = null;
-    // if ($type == 'facade') {
-    // }
-    $output->writeln('Generating...');
+    $configFile = $input->getOption('config');
 
-    $facade = Facade::generate($name);
-    $repository = Repository::generate($name);
-    $entity = Entity::generate($name);
-    $control = FormControl::generate($name);
+    if ($configFile) {
+        $config = new Configurator($configFile);
+        $output->writeln('Generating from config: ' . $configFile . '...');
+        if (isset($config->model) && $config->model) {
+            $modelFiles = $config->generateModel($config->model);
+            FileGenerator::writeFile($modelFiles);
+        }
+        if (isset($config->ui) && $config->ui) {
+            $uiFiles = $config->generateUI($config->ui);
+            FileGenerator::writeFile($uiFiles);
+        }
+    } else {
+        $file = null;
+        // if ($type == 'facade') {
+        // }
 
-    FileGenerator::writeFile($facade, $repository, $entity, $control);
+        $facade = Facade::generate($name);
+        $repository = Repository::generate($name);
+        $entity = Entity::generate($name);
+        $control = FormControl::generate($name);
+
+        FileGenerator::writeFile($facade, $repository, $entity, $control);
+    }
 
     $output->writeln('Generated!');
 }
@@ -49,6 +64,11 @@ function command(InputInterface $input, OutputInterface $output)
         'Entity type',
         'database'
     )
-    ->addArgument('name', InputArgument::REQUIRED, 'Class name.')
+    ->addOption(
+        'config', 'c',
+        InputOption::VALUE_REQUIRED,
+        'Path to config file'
+    )
+    ->addArgument('name', InputArgument::OPTIONAL, 'Class name.')
     ->setCode('command')
     ->run();

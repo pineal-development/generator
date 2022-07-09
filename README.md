@@ -24,15 +24,20 @@ composer self-update
 
 If you can't or don't want to update composer, use version `"^1.0"` of this package as that doesn't depend on Composer runtime API 2.2.
 
-#### Additional steps (temporary - will be automated in the future)
-
-1. Copy `mtrgen` file from `project-root/vendor/matronator/generator/bin/` to `project-root/bin/`
-2. Run `chmod +x bin/mtrgen` from the project root in terminal
-
 ## Usage
 
 You run the script from terminal using this command:
 
 ```
-bin/generator
+bin/mtrgen
 ```
+
+#### Configuration
+
+You can specify if you want to generate the files from a config by setting the `--config` (or the shorthand `-c`) option to the path to your config file, like this:
+
+```
+bin/mtrgen --config=path/to/config/file.yml
+```
+
+You can find a sample config file in the `src/` folder under a name `config.sample.yml`. So if you installed this via Composer, it would be in `vendor/matronator/generator/src/config.sample.yml`.

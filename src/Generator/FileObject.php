@@ -14,9 +14,12 @@ class FileObject
 
     public string $directory;
 
-    public function __construct(string $directory, string $filename, PhpFile $contents) {
+    public ?string $entity = null;
+
+    public function __construct(string $directory, string $filename, PhpFile $contents, ?string $entity = null) {
         $this->filename = $filename . '.php';
         $this->contents = $contents;
         $this->directory = $directory;
+        $this->entity = $entity;
     }
 }

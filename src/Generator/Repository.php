@@ -11,7 +11,7 @@ class Repository
 {
     public const DIR_PATH = 'app/model/Database/Repository/';
 
-    public static function generate(string $name)
+    public static function generate(string $name): FileObject
     {
         $file = new PhpFile;
 

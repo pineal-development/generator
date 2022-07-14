@@ -11,6 +11,7 @@ if (!is_file($root_app . '/vendor/autoload.php')) {
 
 require_once $root_app . '/vendor/autoload.php';
 
+use Matronator\Generator\Cli\Application;
 use Matronator\Generator\Config\Configurator;
 use Matronator\Generator\Entity;
 use Matronator\Generator\Facade;
@@ -22,6 +23,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
+
+// $application = new Application;
+// $application->app->run();
 
 function command(InputInterface $input, OutputInterface $output)
 {
@@ -41,16 +45,22 @@ function command(InputInterface $input, OutputInterface $output)
             FileGenerator::writeFile($uiFiles);
         }
     } else {
-        $file = null;
-        // if ($type == 'facade') {
-        // }
+        $files = [];
+        if (strtolower($type) == 'facade') {
+            $files[] = Facade::generate($name);
+        } else if (strtolower($type) == 'repository') {
+            $files[] = Repository::generate($name);
+        } else if (strtolower($type) == 'entity') {
+            $files[] = Entity::generate($name);
+        } else if (strtolower($type) == 'control') {
+            $files[] = FormControl::generate($name);
+        } else if (strtolower($type) == 'database') {
+            $files[] = Repository::generate($name);
+            $files[] = Entity::generate($name);
+            $files[] = Facade::generate($name);
+        }
 
-        $facade = Facade::generate($name);
-        $repository = Repository::generate($name);
-        $entity = Entity::generate($name);
-        $control = FormControl::generate($name);
-
-        FileGenerator::writeFile($facade, $repository, $entity, $control);
+        FileGenerator::writeFile($files);
     }
 
     $output->writeln('Generated!');
@@ -66,7 +76,7 @@ function command(InputInterface $input, OutputInterface $output)
     )
     ->addOption(
         'config', 'c',
-        InputOption::VALUE_REQUIRED,
+        InputOption::VALUE_OPTIONAL,
         'Path to config file'
     )
     ->addArgument('name', InputArgument::OPTIONAL, 'Class name.')

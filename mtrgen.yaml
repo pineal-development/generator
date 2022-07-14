@@ -1,0 +1,28 @@
+mtrgen:
+  general:
+    writeOverExisting: true
+
+  entity:
+    folder: app/model/Database/Entity
+    namespace: App\Model\Database\Entity
+    config: false
+
+  repository:
+    folder: app/model/Database/Repository
+    namespace: App\Model\Database\Repository
+    config: false
+
+  facade:
+    folder: app/model/Database/Facade
+    namespace: App\Model\Database\Facade
+    config: app/config/app/facades.neon
+
+  form:
+    folder: app/ui/Form
+    namespace: App\UI\Form
+    config: app/config/app/forms.neon
+
+  control:
+    folder: app/ui/Control
+    namespace: App\UI\Control
+    config: app/config/app/controls.neon

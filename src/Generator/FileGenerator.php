@@ -6,6 +6,7 @@ namespace Matronator\Generator;
 
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\Neon\Neon;
+use Symfony\Component\Yaml\Yaml;
 
 class FileGenerator
 {
@@ -17,7 +18,7 @@ class FileGenerator
         $printer = new PsrPrinter;
 
         foreach ($files as $file) {
-            if ($file->entity) {
+            if (isset($file->entity) && $file->entity) {
                 if (!self::folderExist($file->directory)) {
                     mkdir($file->directory);
                 }
@@ -36,20 +37,33 @@ class FileGenerator
 
     private static function folderExist($folder)
     {
-        // Get canonicalized absolute pathname
         $path = realpath($folder);
 
-        // If it exist, check if it's a directory
         return ($path !== false AND is_dir($path)) ? $path : false;
     }
 
     private static function addService(string $filename, string $config, string $class)
     {
-        $neon = Neon::decodeFile($config);
-        $neon['services'][lcfirst(str_replace('.php', '', $filename))] = [
-            'class' => $class,
-            'inject' => true,
-        ];
-        file_put_contents('nette.safe://'.$config, Neon::encode($neon, Neon::BLOCK));
+        preg_match('/.+\.(yaml|yml|neon)/', $config, $extension);
+
+        switch ($extension[1]) {
+            case 'yaml':
+            case 'yml':
+                $yaml = Yaml::parseFile($config);
+                $yaml['services'][lcfirst(str_replace('.php', '', $filename))] = [
+                    'class' => $class,
+                    'inject' => true,
+                ];
+                file_put_contents('nette.safe://'.$config, Yaml::dump($yaml));
+                break;
+            case 'neon':
+                $neon = Neon::decodeFile($config);
+                $neon['services'][lcfirst(str_replace('.php', '', $filename))] = [
+                    'class' => $class,
+                    'inject' => true,
+                ];
+                file_put_contents('nette.safe://'.$config, Neon::encode($neon, Neon::BLOCK));
+                break;
+        }
     }
 }

@@ -6,6 +6,14 @@ model:
   #   - Entity
   #   - Repository
   #   - Facade
+  entity:
+    extends: App\Model\Database\Entity\AbstractEntity
+    traits:
+      - TId
+      - TCreatedAt
+      - TUpdatedAt
+      - TDeletedAt
+      - TEntity2Array
 ui:
   name: Testing
   entity: Generated

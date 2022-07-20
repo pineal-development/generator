@@ -28,9 +28,9 @@ class FileGenerator
             if (stripos($file->filename, 'Facade') !== false) {
                 self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
             } else if (stripos($file->filename, 'FormControlFactory') !== false) {
-                self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename));
+                self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\Control\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
             } else if (stripos($file->filename, 'FormFactory') !== false) {
-                self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename));
+                self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\Form\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
             }
         }
     }
@@ -42,7 +42,7 @@ class FileGenerator
         return ($path !== false AND is_dir($path)) ? $path : false;
     }
 
-    private static function addService(string $filename, string $config, string $class)
+    private static function addService(string $filename, string $config, string $class, string $type = 'class')
     {
         preg_match('/.+\.(yaml|yml|neon)/', $config, $extension);
 
@@ -51,7 +51,7 @@ class FileGenerator
             case 'yml':
                 $yaml = Yaml::parseFile($config);
                 $yaml['services'][lcfirst(str_replace('.php', '', $filename))] = [
-                    'class' => $class,
+                    $type => $class,
                     'inject' => true,
                 ];
                 file_put_contents('nette.safe://'.$config, Yaml::dump($yaml));
@@ -59,7 +59,7 @@ class FileGenerator
             case 'neon':
                 $neon = Neon::decodeFile($config);
                 $neon['services'][lcfirst(str_replace('.php', '', $filename))] = [
-                    'class' => $class,
+                    $type => $class,
                     'inject' => true,
                 ];
                 file_put_contents('nette.safe://'.$config, Neon::encode($neon, Neon::BLOCK));

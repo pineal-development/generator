@@ -71,6 +71,14 @@ class Form
     /**
      * @return static
      */
+    public function addFormField(FormField $field): self
+    {
+        return $this->addField($field->type, $field->name, $field->label, $field->options);
+    }
+
+    /**
+     * @return static
+     */
     public function addField(string $type, string $name, string $label, ?FormFieldOptions $options = null): self
     {
         $optionsArray = $options !== null ? get_object_vars($options) : [];

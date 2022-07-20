@@ -15,8 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 // #[AsCommand('generate:facade', 'Generates a Facade file', ['gen:facade'])]
 class GenerateFacadeCommand extends Command
 {
+    protected static $defaultName = 'generate:facade';
+    protected static $defaultDescription = 'Generates a Facade file.';
+
     public function configure(): void
     {
+        $this->setAliases(['gen:fa', 'gen:facade']);
         $this->addArgument('name', InputArgument::REQUIRED, 'Class name.');
     }
 
@@ -24,11 +28,11 @@ class GenerateFacadeCommand extends Command
     {
         $name = $input->getArgument('name');
 
-        $output->writeln("Generating {$name}Facade");
+        $output->writeln("Generating <options=bold>{$name}Facade</>");
 
         FileGenerator::writeFile(Facade::generate($name));
 
-        $output->writeln('Done!');
+        $output->writeln('<fg=green>Done!</>');
 
         return self::SUCCESS;
     }

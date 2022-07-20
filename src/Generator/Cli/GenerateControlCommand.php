@@ -7,6 +7,7 @@ namespace Matronator\Generator\Cli;
 use Matronator\Generator\FileGenerator;
 use Matronator\Generator\Form;
 use Matronator\Generator\FormControl;
+use Matronator\Generator\FormControlFactory;
 use Matronator\Generator\Repository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,8 +19,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 // #[AsCommand('generate:control', 'Generates a Control file', ['gen:control'])]
 class GenerateControlCommand extends Command
 {
+    protected static $defaultName = 'generate:control';
+    protected static $defaultDescription = 'Generates a FormControl file.';
+
     public function configure(): void
     {
+        $this->setAliases(['gen:c', 'gen:control']);
+
         $this->addArgument('name', InputArgument::REQUIRED, 'Control name without the `FormControl` suffix.')
             ->addOption('entity', 'e', InputOption::VALUE_REQUIRED, 'Entity to which the control belongs.');
     }
@@ -29,11 +35,11 @@ class GenerateControlCommand extends Command
         $name = $input->getArgument('name');
         $entity = $input->getOption('entity') ?? null;
 
-        $output->writeln("Generating {$name}FormControl");
+        $output->writeln($entity ? "Generating <options=bold>{$name}FormControl</> to entity {$entity}..." : "Generating <options=bold>{$name}FormControl</>...");
+        $output->writeln($entity ? "Generating <options=bold>{$name}FormControlFactory</> to entity {$entity}..." : "Generating <options=bold>{$name}FormControlFactory</>...");
+        FileGenerator::writeFile([FormControl::generate($name, $entity), FormControlFactory::generate($name, $entity)]);
 
-        FileGenerator::writeFile([FormControl::generate($name, $entity)]);
-
-        $output->writeln('Done!');
+        $output->writeln('<fg=green>Done!</>');
 
         return self::SUCCESS;
     }

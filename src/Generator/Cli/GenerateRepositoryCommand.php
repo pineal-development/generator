@@ -15,8 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 // #[AsCommand('generate:repository', 'Generates a Repository file', ['gen:repository'])]
 class GenerateRepositoryCommand extends Command
 {
+    protected static $defaultName = 'generate:repository';
+    protected static $defaultDescription = 'Generates a Repository file.';
+
     public function configure(): void
     {
+        $this->setAliases(['gen:r', 'gen:repo']);
         $this->addArgument('name', InputArgument::REQUIRED, 'Class name.');
     }
 
@@ -24,11 +28,11 @@ class GenerateRepositoryCommand extends Command
     {
         $name = $input->getArgument('name');
 
-        $output->writeln("Generating {$name}Repository");
+        $output->writeln("Generating <options=bold>{$name}Repository</>");
 
         FileGenerator::writeFile(Repository::generate($name));
 
-        $output->writeln('Done!');
+        $output->writeln('<fg=green>Done!</>');
 
         return self::SUCCESS;
     }

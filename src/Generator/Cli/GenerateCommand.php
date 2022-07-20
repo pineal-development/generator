@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Matronator\Generator\Cli;
 
 use Matronator\Generator\Config\Configurator;
+use Matronator\Generator\Entity;
+use Matronator\Generator\Facade;
 use Matronator\Generator\FileGenerator;
+use Matronator\Generator\Repository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,10 +25,12 @@ class GenerateCommand extends Command
 
     protected function configure(): void
     {
+        $this->setAliases(['gen']);
+
         $this->setHelp('Generate files...')
             ->addArgument('name', InputArgument::OPTIONAL, 'Class name.')
             ->addOption('type', 't', InputOption::VALUE_OPTIONAL, 'File type', 'database')
-            ->addOption('entity', 'e', InputOption::VALUE_OPTIONAL, 'Entity to which the file belongs')
+            ->addOption('entity', 'e', InputOption::VALUE_REQUIRED, 'Entity to which the file belongs')
             ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Path to config file');
     }
 
@@ -42,24 +48,65 @@ class GenerateCommand extends Command
                 $uiFiles = $config->generateUI($config->ui);
                 FileGenerator::writeFile($uiFiles);
             }
+        } else {
+            $name = $input->getArgument('name') ?? null;
+            $type = $input->getOption('type') ?? null;
+            $entity = $input->getOption('entity') ?? null;
+            if ($type && $name) {
+                switch(strtolower($type)) {
+                    case 'database':
+                        FileGenerator::writeFile(Entity::generate($name), Repository::generate($name), Facade::generate($name));
+                        break;
+                    case 'entity':
+                        FileGenerator::writeFile(Entity::generate($name));
+                        break;
+                    case 'repository':
+                        FileGenerator::writeFile(Repository::generate($name));
+                        break;
+                    case 'facade':
+                        FileGenerator::writeFile(Facade::generate($name));
+                        break;
+                    case 'ui':
+                        $this->runCommand('gen:f', [
+                            'command' => 'gen:f',
+                            'name' => $name,
+                            '--entity' => $entity,
+                        ], $output);
+                        $this->runCommand('gen:c', [
+                            'command' => 'gen:c',
+                            'name' => $name,
+                            '--entity' => $entity,
+                        ], $output);
+                        break;
+                    case 'control':
+                        $this->runCommand('gen:c', [
+                            'command' => 'gen:c',
+                            'name' => $name,
+                            '--entity' => $entity,
+                        ], $output);
+                        break;
+                    case 'form':
+                        $this->runCommand('gen:f', [
+                            'command' => 'gen:f',
+                            'name' => $name,
+                            '--entity' => $entity,
+                        ], $output);
+                        break;
+                }
+            } else {
+                return Command::INVALID;
+            }
         }
 
-        $output->writeln('Done!');
-        // ... put here the code to create the user
+        $output->writeln('<fg=green>All files generated!</>');
 
-        // this method must return an integer number with the "exit status code"
-        // of the command. You can also use these constants to make code more readable
-
-        // return this if there was no problem running the command
-        // (it's equivalent to returning int(0))
         return Command::SUCCESS;
+    }
 
-        // or return this if some error happened during the execution
-        // (it's equivalent to returning int(1))
-        // return Command::FAILURE;
-
-        // or return this to indicate incorrect command usage; e.g. invalid options
-        // or missing arguments (it's equivalent to returning int(2))
-        // return Command::INVALID
+    private function runCommand(string $name, array $parameters, OutputInterface $output)
+    {
+        return $this->getApplication()
+            ->find($name)
+            ->run(new ArrayInput($parameters), $output);
     }
 }

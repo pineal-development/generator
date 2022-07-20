@@ -15,19 +15,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 // #[AsCommand('generate:entity', 'Generates an Entity file', ['gen:entity'])]
 class GenerateEntityCommand extends Command
 {
+    protected static $defaultName = 'generate:entity';
+    protected static $defaultDescription = 'Generates an Entity file.';
+
     public function configure(): void
     {
+        $this->setAliases(['gen:e', 'gen:entity']);
         $this->addArgument('name', InputArgument::REQUIRED, 'Class name.');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
-        $output->writeln("Generating {$name}Entity");
+        $output->writeln("Generating <options=bold>{$name}Entity</>");
 
         FileGenerator::writeFile([Entity::generate($name)]);
 
-        $output->writeln('Done!');
+        $output->writeln('<fg=green>Done!</>');
 
         return self::SUCCESS;
     }

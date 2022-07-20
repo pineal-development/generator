@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["generator", "file generator", "php-generator"],
     "license": "MIT",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "readme": "README.md",
     "autoload": {
         "psr-4": {

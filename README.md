@@ -29,17 +29,27 @@ If you can't or don't want to update composer, use version `"^1.0"` of this pack
 You run the script from terminal using this command:
 
 ```
-bin/mtrgen generate:entity
-bin/mtrgen generate:facade
-bin/mtrgen generate:repository
+# To list all available commands
+vendor/bin/mtrgen list
+
+# To see all generate commands
+vendor/bin/mtrgen list generate
+
+# To see usage of generate command
+vendor/bin/mtrgen generate --help
+vendor/bin/mtrgen gen -h
+
+# Generate entity only
+vendor/bin/mtrgen generate:entity EntityName
+vendor/bin/mtrgen gen:e EntityName
 ```
 
-#### Configuration
+#### Generating from config file
 
 You can specify if you want to generate the files from a config by setting the `--config` (or the shorthand `-c`) option to the path to your config file, like this:
 
 ```
-bin/mtrgen generate --config=path/to/config/file.yml
+vendor/bin/mtrgen generate --config=path/to/config/file.yml
 ```
 
 You can find a sample config file in the `src/` folder under a name `config.sample.yml`. So if you installed this via Composer, it would be in `vendor/matronator/generator/src/config.sample.yml`.

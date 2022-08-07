@@ -53,3 +53,10 @@ vendor/bin/mtrgen generate --config=path/to/config/file.yml
 ```
 
 You can find a sample config file in the `src/` folder under a name `config.sample.yml`. So if you installed this via Composer, it would be in `vendor/matronator/generator/src/config.sample.yml`.
+
+## Roadmap
+
+- [x] Generate files
+- [x] Generate files from config
+- [ ] Add global config to customize project structure
+- [ ] Customize structure of generated files using config or some template

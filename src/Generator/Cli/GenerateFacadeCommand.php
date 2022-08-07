@@ -28,7 +28,7 @@ class GenerateFacadeCommand extends Command
     {
         $name = $input->getArgument('name');
 
-        $output->writeln("Generating <options=bold>{$name}Facade</>");
+        $output->writeln("Generating <options=bold>{$name}Facade</>...");
 
         FileGenerator::writeFile(Facade::generate($name));
 

@@ -55,15 +55,21 @@ class GenerateCommand extends Command
             if ($type && $name) {
                 switch(strtolower($type)) {
                     case 'database':
+                        $output->writeln("Generating entity <options=bold>{$name}</>...");
+                        $output->writeln("Generating facade <options=bold>{$name}Facade</>...");
+                        $output->writeln("Generating repository <options=bold>{$name}Repository</>...");
                         FileGenerator::writeFile(Entity::generate($name), Repository::generate($name), Facade::generate($name));
                         break;
                     case 'entity':
+                        $output->writeln("Generating entity <options=bold>{$name}</>...");
                         FileGenerator::writeFile(Entity::generate($name));
                         break;
                     case 'repository':
+                        $output->writeln("Generating repository <options=bold>{$name}Repository</>...");
                         FileGenerator::writeFile(Repository::generate($name));
                         break;
                     case 'facade':
+                        $output->writeln("Generating facade <options=bold>{$name}Facade</>...");
                         FileGenerator::writeFile(Facade::generate($name));
                         break;
                     case 'ui':

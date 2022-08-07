@@ -27,7 +27,7 @@ class GenerateEntityCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
-        $output->writeln("Generating <options=bold>{$name}Entity</>");
+        $output->writeln("Generating <options=bold>{$name}Entity</>...");
 
         FileGenerator::writeFile([Entity::generate($name)]);
 

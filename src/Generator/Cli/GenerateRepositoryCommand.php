@@ -28,7 +28,7 @@ class GenerateRepositoryCommand extends Command
     {
         $name = $input->getArgument('name');
 
-        $output->writeln("Generating <options=bold>{$name}Repository</>");
+        $output->writeln("Generating <options=bold>{$name}Repository</>...");
 
         FileGenerator::writeFile(Repository::generate($name));
 

@@ -6,6 +6,8 @@ namespace Matronator\Generator;
 
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\Neon\Neon;
+use Nette\PhpGenerator\Printer;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class FileGenerator
@@ -14,24 +16,34 @@ class FileGenerator
     public const CONTROLS_CONFIG = 'app/config/app/controls.neon';
     public const FORMS_CONFIG = 'app/config/app/forms.neon';
 
-    public static function writeFile($files) {
+    public static function writeFile(...$files)
+    {
         $printer = new PsrPrinter;
 
-        foreach ($files as $file) {
-            if (isset($file->entity) && $file->entity) {
-                if (!self::folderExist($file->directory)) {
-                    mkdir($file->directory);
-                }
+        if (is_array($files)) {
+            foreach ($files as $file) {
+                self::write($file, $printer);
             }
-            file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
+        } else {
+            self::write($files, $printer);
+        }
+    }
 
-            if (stripos($file->filename, 'Facade') !== false) {
-                self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
-            } else if (stripos($file->filename, 'FormControlFactory') !== false) {
-                self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\Control\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
-            } else if (stripos($file->filename, 'FormFactory') !== false) {
-                self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\Form\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
+    private static function write(FileObject $file, Printer $printer)
+    {
+        if (isset($file->entity) && $file->entity) {
+            if (!self::folderExist($file->directory)) {
+                mkdir($file->directory);
             }
+        }
+        file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
+
+        if (stripos($file->filename, 'Facade') !== false) {
+            self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
+        } else if (stripos($file->filename, 'FormControlFactory') !== false) {
+            self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\Control\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
+        } else if (stripos($file->filename, 'FormFactory') !== false) {
+            self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\Form\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
         }
     }
 

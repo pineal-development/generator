@@ -26,7 +26,7 @@ class Facade
             ->setExtends('App\Model\Database\Facade\AbstractFacade');
 
         $class->addProperty(lcfirst($name.'Repository'))
-            ->setType('App\Model\Database\Repository\\'.$name.'Repository')
+            // ->setType('App\Model\Database\Repository\\'.$name.'Repository')
             ->addComment("@var {$name}Repository");
 
         $class->addMethod('injectRepository')

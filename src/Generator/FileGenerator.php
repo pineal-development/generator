@@ -33,7 +33,7 @@ class FileGenerator
     {
         if (isset($file->entity) && $file->entity) {
             if (!self::folderExist($file->directory)) {
-                mkdir($file->directory);
+                mkdir($file->directory, 0777, true);
             }
         }
         file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
@@ -47,7 +47,7 @@ class FileGenerator
         }
     }
 
-    private static function folderExist($folder)
+    public static function folderExist($folder)
     {
         $path = realpath($folder);
 

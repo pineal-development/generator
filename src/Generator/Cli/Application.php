@@ -20,6 +20,7 @@ class Application
             new GenerateRepositoryCommand(),
             new GenerateFormCommand(),
             new GenerateControlCommand(),
+            new GeneratePresenterCommand(),
         ]);
     }
 }

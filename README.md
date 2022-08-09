@@ -42,6 +42,10 @@ vendor/bin/mtrgen gen -h
 # Generate entity only
 vendor/bin/mtrgen generate:entity EntityName
 vendor/bin/mtrgen gen:e EntityName
+
+# Generate entity, repo and facade
+vendor/bin/mtrgen generate --type=database Name
+vendor/bin/mtrgen gen -t database Name
 ```
 
 #### Generating from config file

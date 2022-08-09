@@ -56,9 +56,17 @@ You can find a sample config file in the `src/` folder under a name `config.samp
 
 ## Roadmap
 
+Planned features for the project. Will be adding features as I think of them.
+
 - [x] Generate files
 - [x] Generate files from config
+- [ ] Generate module files
+  - [ ] BasePresenter
+  - [ ] Presenter
+  - [ ] Templates
 - [ ] Add global config to customize project structure
+  - [ ] Entity Traits to use
+  - [ ] Paths to files and configs
 - [ ] Customize structure of generated files using config or some template
 
 ## License

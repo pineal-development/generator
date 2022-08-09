@@ -64,10 +64,10 @@ Planned features for the project. Will be adding features as I think of them.
 
 - [x] Generate files
 - [x] Generate files from config
-- [ ] Generate module files
-  - [ ] BasePresenter
-  - [ ] Presenter
-  - [ ] Templates
+- [x] Generate module files
+  - [x] BasePresenter
+  - [x] Presenter
+  - [x] Templates
 - [ ] Add global config to customize project structure
   - [ ] Entity Traits to use
   - [ ] Paths to files and configs

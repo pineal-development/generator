@@ -16,6 +16,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Validation;
 
 // #[AsCommand('generate', 'Generate files', ['gen'])]
 class GenerateCommand extends Command
@@ -38,6 +43,7 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
         $configPath = $input->getOption('config');
         if ($configPath) {
             $config = new Configurator($configPath);
@@ -57,6 +63,10 @@ class GenerateCommand extends Command
             $type = $input->getOption('type') ?? null;
             $entity = $input->getOption('entity') ?? null;
             if ($type && $name) {
+                $uiArgs = $entity ? [
+                    'name' => $name,
+                    '--entity' => $entity,
+                ] : ['name' => $name];
                 switch(strtolower($type)) {
                     case 'database':
                     case 'd':
@@ -95,38 +105,114 @@ class GenerateCommand extends Command
                     case 'ui':
                         $this->runCommand('gen:f', [
                             'command' => 'gen:f',
-                            'name' => $name,
-                            '--entity' => $entity,
+                            ...$uiArgs,
                         ], $output);
                         $this->runCommand('gen:c', [
                             'command' => 'gen:c',
-                            'name' => $name,
-                            '--entity' => $entity,
+                            ...$uiArgs,
                         ], $output);
                         break;
                     case 'control':
                     case 'c':
                         $this->runCommand('gen:c', [
                             'command' => 'gen:c',
-                            'name' => $name,
-                            '--entity' => $entity,
+                            ...$uiArgs,
                         ], $output);
                         break;
                     case 'form':
                     case 'f':
                         $this->runCommand('gen:f', [
                             'command' => 'gen:f',
-                            'name' => $name,
-                            '--entity' => $entity,
+                            ...$uiArgs,
                         ], $output);
                         break;
+                    default:
+                        return Command::INVALID;
                 }
             } else {
-                return Command::INVALID;
+                $io->section('Matronator\'s Generator');
+                $io->block('Running the interactive generator...');
+                $helper = $this->getHelper('question');
+                $selectType = new ChoiceQuestion(
+                    '<comment><options=bold>What do you want to generate?</> (defaults to <options=bold>entity</>)</comment>',
+                    ['database', 'entity', 'repository', 'facade', 'presenter', 'ui', 'control', 'form'],
+                    1,
+                );
+                $selectType->setErrorMessage('Option %s is invalid.');
+
+                $chosenType = $helper->ask($input, $output, $selectType);
+
+                $io->newLine();
+                $io->block($chosenType . ' will be generated.', null, null, ' ', true, false);
+
+                $nameQuestion = new Question(
+                    '<comment><options=bold>Enter the name of your entity</> (without any suffixes like -Facade or -Form):</comment> ',
+                    'Test',
+                );
+                $validateName = Validation::createCallable(new Regex([
+                    'pattern' => '/^[a-zA-Z_][\w]*?$/',
+                    'message' => 'Value can only contain letters, numbers and underscore [a-Z0-9_] and cannot start with a number.',
+                ]));
+                $nameQuestion->setValidator($validateName);
+
+                $chosenName = $helper->ask($input, $output, $nameQuestion);
+
+                $io->newLine();
+                $io->block('Entity named ' . $chosenName . ' will be generated.', null, null, ' ', true, false);
+
+                if (in_array($chosenType, ['ui', 'form', 'control'])) {
+                    $entityQuestion = new Question('<comment><options=bold>Enter the Entity to which your component(s) belong</> (or leave empty):</comment> ');
+                    $entityQuestion->setValidator($validateName);
+
+                    $chosenEntity = $helper->ask($input, $output, $entityQuestion) ?? null;
+
+                    $io->newLine();
+                    $io->block($chosenEntity ? 'Component will be generated into the <options=bold>' . $chosenEntity . '</> entity.' : 'Component will be generated without an associated entity.', null, null, ' ', true, false);
+
+                    $this->runCommand('gen', $chosenEntity ? [
+                        'command' => 'gen',
+                        '--type' => $chosenType,
+                        'name' => $chosenName,
+                        '--entity' => $chosenEntity,
+                    ] : [
+                        'command' => 'gen',
+                        '--type' => $chosenType,
+                        'name' => $chosenName,
+                    ], $output);
+                    return Command::SUCCESS;
+                } else if ($chosenType === 'presenter') {
+                    $moduleQuestion = new Question('<comment><options=bold>Enter the module of the Presenter</> (defaults to <options=bold>Admin</>):</comment> ', 'Admin');
+                    $moduleQuestion->setValidator($validateName);
+
+                    $chosenModule = $helper->ask($input, $output, $moduleQuestion);
+
+                    $io->newLine();
+                    $io->block('Presenter will be generated into the <options=bold>' . $chosenModule . '</> module.', null, null, ' ', true, false);
+
+                    $folderQuestion = new Question('<comment><options=bold>Enter the path to the Presenter</> from module root (if it\'s in folder <options=bold>app/modules/Admin/Test/Detail</> then you\'d type <options=bold>"Test/Detail"</>):</comment> ', 'folder');
+                    $validateFolder = Validation::createCallable(new Regex([
+                        'pattern' => '/^(?![\/])(?![\w\/]*[\/]$)[\w\/]*/',
+                        'message' => 'Value must be a valid path without leading or trailing slashes and can only contain letters, numbers, underscore [a-Z0-9_] and slashes in between folders.',
+                    ]));
+                    $folderQuestion->setValidator($validateFolder);
+
+                    $chosenFolder = $helper->ask($input, $output, $folderQuestion);
+
+                    $io->newLine();
+                    $io->block('Presenter will be located in <options=bold>' . $chosenFolder . '</>.');
+
+                    $this->runCommand('gen:p', [
+                        'command' => 'gen:p',
+                        '--type' => $chosenType,
+                        'name' => $chosenName,
+                        'module' => $chosenModule,
+                        'folder' => $chosenFolder,
+                    ], $output);
+                }
             }
         }
 
-        $output->writeln('<fg=green>All files generated!</>');
+        $output->writeln('<info>All files generated!</info>');
 
         return Command::SUCCESS;
     }

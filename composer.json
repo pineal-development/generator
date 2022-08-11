@@ -31,7 +31,8 @@
         "symfony/console": "^5.4",
         "nette/neon": "^3.3",
         "nette/safe-stream": "^2.5",
-        "symfony/yaml": "^5.4"
+        "symfony/yaml": "^5.4",
+        "symfony/validator": "^5.4"
     },
     "minimum-stability": "stable",
     "config": {

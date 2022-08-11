@@ -46,7 +46,7 @@ class GeneratePresenterCommand extends Command
 
         Presenter::generateTemplate($folder, $module);
 
-        $output->writeln('<fg=green>All done!</>');
+        $output->writeln('<info>All done!</info>');
 
         return self::SUCCESS;
     }

@@ -73,7 +73,7 @@ class GenerateCommand extends Command
                         $output->writeln("Generating entity <options=bold>{$name}</>...");
                         $output->writeln("Generating facade <options=bold>{$name}Facade</>...");
                         $output->writeln("Generating repository <options=bold>{$name}Repository</>...");
-                        FileGenerator::writeFile(Entity::generate($name), Repository::generate($name), Facade::generate($name));
+                        FileGenerator::writeFile([Entity::generate($name), Repository::generate($name), Facade::generate($name)]);
                         break;
                     case 'entity':
                     case 'e':
@@ -93,6 +93,8 @@ class GenerateCommand extends Command
                     case 'presenter':
                     case 'p':
                         if (!$folder) {
+                            $io->error('Folder not specified.');
+                            $io->block('<comment>You haven\'t specified a folder.</comment> Specify a folder as the third argument after <options=bold>[name]</> and <options=bold>[module]</>.', null, null, ' ', false, false);
                             return Command::INVALID;
                         }
                         $this->runCommand('gen:p', [
@@ -127,6 +129,8 @@ class GenerateCommand extends Command
                         ], $output);
                         break;
                     default:
+                        $io->error('Invalid type.');
+                        $io->block('<comment>The type you entered is not recognized.</comment> Recognized types are: <options=bold>[database, entity, repository, facade, presenter, ui, control, form]</>', null, null, ' ', false, false);
                         return Command::INVALID;
                 }
             } else {
@@ -213,6 +217,7 @@ class GenerateCommand extends Command
         }
 
         $output->writeln('<info>All files generated!</info>');
+        $io->newLine();
 
         return Command::SUCCESS;
     }

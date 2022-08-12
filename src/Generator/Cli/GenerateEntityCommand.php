@@ -29,7 +29,7 @@ class GenerateEntityCommand extends Command
         $name = $input->getArgument('name');
         $output->writeln("Generating <options=bold>{$name}Entity</>...");
 
-        FileGenerator::writeFile([Entity::generate($name)]);
+        FileGenerator::writeFile(Entity::generate($name));
 
         $output->writeln('<fg=green>Done!</>');
 

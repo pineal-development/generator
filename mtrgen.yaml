@@ -12,6 +12,11 @@ mtrgen:
     namespace: App\Model\Database\Repository
     config: false
 
+  presenter:
+    folder: app/modules
+    namespace: App\Modules
+    config: false
+
   facade:
     folder: app/model/Database/Facade
     namespace: App\Model\Database\Facade

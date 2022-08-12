@@ -11,7 +11,7 @@ class Entity
 {
     public const DIR_PATH = 'app/model/Database/Entity/';
 
-    public static function generate(string $name)
+    public static function generate(string $name): FileObject
     {
         $file = new PhpFile;
 

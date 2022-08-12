@@ -49,7 +49,7 @@ class GenerateFormCommand extends Command
 
         $output->writeln($entity ? "Generating <options=bold>{$name}FormFactory</> to entity {$entity}..." : "Generating <options=bold>{$name}FormFactory</>...");
 
-        FileGenerator::writeFile($form->output(), FormFactory::generate($name, $entity));
+        FileGenerator::writeFile([$form->output(), FormFactory::generate($name, $entity)]);
 
         $output->writeln('<fg=green>Done!</>');
 

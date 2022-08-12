@@ -7,7 +7,6 @@ namespace Matronator\Generator;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\Neon\Neon;
 use Nette\PhpGenerator\Printer;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class FileGenerator
@@ -16,7 +15,7 @@ class FileGenerator
     public const CONTROLS_CONFIG = 'app/config/app/controls.neon';
     public const FORMS_CONFIG = 'app/config/app/forms.neon';
 
-    public static function writeFile(...$files)
+    public static function writeFile($files)
     {
         $printer = new PsrPrinter;
 
@@ -31,11 +30,10 @@ class FileGenerator
 
     private static function write(FileObject $file, Printer $printer)
     {
-        if (isset($file->entity) && $file->entity) {
-            if (!self::folderExist($file->directory)) {
-                mkdir($file->directory, 0777, true);
-            }
+        if (!self::folderExist($file->directory)) {
+            mkdir($file->directory, 0777, true);
         }
+
         file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
 
         if (stripos($file->filename, 'Facade') !== false) {
@@ -51,7 +49,7 @@ class FileGenerator
     {
         $path = realpath($folder);
 
-        return ($path !== false AND is_dir($path)) ? $path : false;
+        return ($path !== false && is_dir($path)) ? $path : false;
     }
 
     private static function addService(string $filename, string $config, string $class, string $type = 'class')

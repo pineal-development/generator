@@ -12,7 +12,7 @@ class Application
 
     public function __construct()
     {
-        $this->app = new ConsoleApplication('MTRGen', '1.4.0');
+        $this->app = new ConsoleApplication('MTRGen', '1.4.1');
         $this->app->addCommands([
             new GenerateCommand(),
             new GenerateEntityCommand(),
@@ -22,5 +22,6 @@ class Application
             new GenerateControlCommand(),
             new GeneratePresenterCommand(),
         ]);
+        $this->app->setDefaultCommand('generate');
     }
 }

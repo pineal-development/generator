@@ -29,6 +29,9 @@ If you can't or don't want to update composer, use version `"^1.0"` of this pack
 You run the script from terminal using this command:
 
 ```
+# Start interactive utility that walks you through steps to generate files
+vendor/bin/mtrgen
+
 # To list all available commands
 vendor/bin/mtrgen list
 

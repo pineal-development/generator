@@ -32,7 +32,8 @@
         "nette/neon": "^3.3",
         "nette/safe-stream": "^2.5",
         "symfony/yaml": "^5.4",
-        "symfony/validator": "^5.4"
+        "symfony/validator": "^5.4",
+        "spatie/yaml-front-matter": "^2.0"
     },
     "minimum-stability": "stable",
     "config": {
@@ -57,5 +58,8 @@
             "type": "github",
             "url": "https://github.com/sponsors/matronator"
         }
-    ]
+    ],
+    "require-dev": {
+        "nette/tester": "^2.4"
+    }
 }

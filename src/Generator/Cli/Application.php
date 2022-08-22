@@ -21,6 +21,7 @@ class Application
             new GenerateFormCommand(),
             new GenerateControlCommand(),
             new GeneratePresenterCommand(),
+            new GenerateFromTemplateCommand(),
         ]);
         $this->app->setDefaultCommand('generate');
     }

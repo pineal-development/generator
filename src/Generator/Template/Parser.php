@@ -14,7 +14,6 @@ use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\Property;
 use Nette\Utils\Json;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
 use SplFileObject;
 use Symfony\Component\Yaml\Yaml;
 
@@ -22,40 +21,21 @@ class Parser
 {
     public static function parseFile(string $path, array $arguments)
     {
-        $file = new SplFileObject($path);
-        $isFrontMatter = preg_match('/^---$[\s\S]*?^---$/m', $file->fread($file->getSize()), $frontMatter);
+        $object = self::parseByExtension($path);
 
-        $args = [];
-        $object = [];
-        if ($isFrontMatter !== 0) {
-            $parsed = YamlFrontMatter::parseFile($path);
-            $definedArgs = $parsed->matter('arguments');
-            if (is_array($definedArgs)) {
-                foreach ($definedArgs as $argument) {
-                    $argument = (object) $argument;
-                    $argObject = [
-                        'name' => $argument->name,
-                        'type' => $argument->type,
-                    ];
-                    if (property_exists($argument, 'default')) {
-                        $argObject['default'] = $argument->default;
-                    }
-                    if (key_exists($argument->name, $arguments)) {
-                        $argObject['value'] = $arguments[$argument->name];
-                    }
-                    $args[$argument->name] = $argObject['value'] ?? $argObject['default'];
-                }
-            }
-            $outDir = $parsed->matter('path');
-            $name = $parsed->matter('name');
-            $object = self::parseByExtension($path, $parsed->body());
-        } else {
-            $object = self::parseByExtension($path);
-        }
+        $filename = MtrYml::parse($object->filename, $arguments);
+        $outDir = MtrYml::parse($object->path, $arguments);
 
-        $file = self::generate($object, $args);
+        $file = self::generate($object->file, $arguments);
 
-        return new FileObject($outDir ?? 'generated/test/', $name ?? 'Test', $file);
+        return new FileObject($outDir, $filename, $file);
+    }
+
+    public static function getName(string $path)
+    {
+        $object = self::parseByExtension($path);
+
+        return $object->name;
     }
 
     public static function generate(object $body, array $args): PhpFile

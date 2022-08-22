@@ -1,0 +1,51 @@
+name: TestObject
+filename: <%name%>TestObject
+path: app/generated/Testing/
+file:
+  strict: true
+  namespace:
+    name: App\Model\Entity
+    use:
+      - App\Test
+      - App\Model
+      - App\Model\Database\Entity\<%entity%>Entity
+    class:
+      name: <%name%>TestObject
+      modifier: final
+      extends: App\Model\Entity\BaseEntity
+      constants:
+        - name: MY_CONST
+          value: 1
+      props:
+        - visibility: private
+          type: string|null
+          name: dirPath
+          value: app/model/database/entity
+        - type: int
+          name: test
+          static: true
+          init: true
+          nullable: true
+      methods:
+        - visibility: public
+          name: __construct
+          modifier: abstract
+          return: void
+          ref: true
+          nullable: false
+          params:
+            - type: int
+              name: test
+              value: 42
+              promoted: true
+            - type: string|null
+              name: dirPath
+              nullable: true
+              ref: true
+          body:
+            - $this->test = $test;
+            - $this->dirPath = $dirPath;
+          comments:
+            - Entity constructor
+            - '* @return void'
+            - '*'

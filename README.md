@@ -1,7 +1,3 @@
----
-description: CLI-based PHP file generator.
----
-
 # Matronator/Generator
 
 Automatically generate Entity and related files from the console.

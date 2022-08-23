@@ -1,3 +1,7 @@
+---
+description: CLI-based PHP file generator.
+---
+
 # Matronator/Generator
 
 Automatically generate Entity and related files from the console.
@@ -65,16 +69,16 @@ You can find a sample config file in the `src/` folder under a name `config.samp
 
 Planned features for the project. Will be adding features as I think of them.
 
-- [x] Generate files
-- [x] Generate files from config
-- [x] Generate module files
-  - [x] BasePresenter
-  - [x] Presenter
-  - [x] Templates
-- [ ] Add global config to customize project structure
-  - [ ] Entity Traits to use
-  - [ ] Paths to files and configs
-- [ ] Customize structure of generated files using config or some template
+* [x] Generate files
+* [x] Generate files from config
+* [x] Generate from templates
+* [x] Generate module files
+  * [x] BasePresenter
+  * [x] Presenter
+  * [x] Templates
+* [ ] Add global config to customize project structure
+  * [ ] Entity Traits to use
+  * [ ] Paths to files and configs
 
 ## License
 

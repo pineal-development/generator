@@ -8,7 +8,8 @@
         "https://files.matronator.com/public/mtrgen/mtrgen-template-schema.json": [
             "templates/mtrgen-template.yaml",
             "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/templates/Entity.mtrgen.yaml",
-            "templates/Entity.mtrgen.yaml"
+            "templates/Entity.mtrgen.yaml",
+            "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/templates/Entity.template.yaml"
         ]
     }
 }

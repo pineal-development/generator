@@ -21,7 +21,7 @@ class Parser
 {
     public static function parseFile(string $path, array $arguments)
     {
-        $object = self::parseByExtension($path);
+        $object = MtrYml::parseByExtension($path);
 
         $filename = MtrYml::parse($object->filename, $arguments);
         $outDir = MtrYml::parse($object->path, $arguments);
@@ -33,7 +33,7 @@ class Parser
 
     public static function getName(string $path)
     {
-        $object = self::parseByExtension($path);
+        $object = MtrYml::parseByExtension($path);
 
         return $object->name;
     }
@@ -186,36 +186,6 @@ class Parser
         }
 
         return $method;
-    }
-
-    public static function parseByExtension(string $filename, ?string $contents = null)
-    {
-        if (!file_exists($filename))
-            throw new FileNotFoundException("File '$filename' does not exist.");
-
-        $file = new SplFileObject($filename);
-
-        $extension = $file->getExtension();
-
-        switch ($extension) {
-            case 'yml':
-            case 'yaml':
-            case 'yamlt':
-            case 'mtryml':
-            case 'ymtr':
-                $parsed = $contents ? Yaml::parse($contents, Yaml::PARSE_OBJECT_FOR_MAP) : Yaml::parseFile($filename, Yaml::PARSE_OBJECT_FOR_MAP);
-                break;
-            case 'neon':
-                $parsed = $contents ? Neon::decode($contents) : Neon::decodeFile($filename);
-                break;
-            case 'json':
-                $parsed = $contents ? Json::decode($contents) : Json::decode(file_get_contents($filename));
-                break;
-            default:
-                throw new InvalidArgumentException("Unsupported extension value '{$extension[0]}'.");
-        }
-
-        return $parsed;
     }
 
     public static function is(mixed &$subject): bool

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "https://files.matronator.com/public/mtrgen/mtrgen-template-schema.json",
+  "$id": "https://files.matronator.com/public/mtrgen/1.0.1/mtrgen-template-schema.json",
   "title": "MTRGen Template Files Schema",
   "description": "Schema for YAML/JSON templates for MTRGen PHP file generator.",
   "$ref": "#/definitions/Template",
@@ -53,13 +53,36 @@
         "use": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/Use"
           }
         }
       },
       "required": [],
       "title": "File",
       "description": "Root level of the file containing the namespace, classes, use statements, etc"
+    },
+    "Use": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "alias": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "title": "Use"
+        },
+        {
+          "type": "string"
+        }
+      ]
     },
     "Namespace": {
       "type": "object",

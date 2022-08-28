@@ -39,8 +39,8 @@ class GenerateFromTemplateCommand extends Command
         $path = $input->getOption('path') ?? null;
         $arguments = $this->getArguments($input->getArgument('args')) ?? null;
 
+        $helper = $this->getHelper('question');
         if (!$path) {
-            $helper = $this->getHelper('question');
             $io->newLine();
             $pathQuestion = new Question('<comment><options=bold>Enter the path to your template</>:</comment> ');
             $validatePath = Validation::createCallable(new Regex([

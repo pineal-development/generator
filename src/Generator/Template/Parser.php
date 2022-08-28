@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Matronator\Generator\Template;
 
 use Matronator\Generator\FileObject;
-use Nette\FileNotFoundException;
-use Nette\InvalidArgumentException;
-use Nette\Neon\Neon;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\Property;
-use Nette\Utils\Json;
-use SplFileObject;
-use Symfony\Component\Yaml\Yaml;
 
 class Parser
 {
@@ -51,6 +45,12 @@ class Parser
         if (isset($body->class)) {
             self::class($body->class, $args, $file);
         }
+        if (isset($body->interface)) {
+            self::interface($body->interface, $args, $file);
+        }
+        if (isset($body->trait)) {
+            self::trait($body->trait, $args, $file);
+        }
 
         return $file;
     }
@@ -65,6 +65,43 @@ class Parser
     {
         $class = !$parent ? new ClassType(MtrYml::parse($object->name, $args)) : $parent->addClass(MtrYml::parse($object->name, $args));
 
+        return self::defineObject($object, $args, $class);
+    }
+
+    /**
+     * @return ClassType
+     * @param object $object
+     * @param array $args
+     * @param PhpFile|PhpNamespace|null $parent
+     */
+    private static function interface(object $object, array $args, mixed &$parent = null): ClassType
+    {
+        $interface = !$parent ? ClassType::interface(MtrYml::parse($object->name, $args)) : $parent->addInterface(MtrYml::parse($object->name, $args));
+
+        return self::defineObject($object, $args, $interface);
+    }
+
+    /**
+     * @return ClassType
+     * @param object $object
+     * @param array $args
+     * @param PhpFile|PhpNamespace|null $parent
+     */
+    private static function trait(object $object, array $args, mixed &$parent = null): ClassType
+    {
+        $trait = !$parent ? ClassType::trait(MtrYml::parse($object->name, $args)) : $parent->addTrait(MtrYml::parse($object->name, $args));
+
+        return self::defineObject($object, $args, $trait);
+    }
+
+    /**
+     * @return ClassType
+     * @param object $object
+     * @param array $args
+     * @param ClassType $class
+     */
+    private static function defineObject(object $object, array $args, ClassType $class): ClassType
+    {
         if (self::is($object->modifier)) {
             if ($object->modifier === 'final') $class->setFinal();
             if ($object->modifier === 'abstract') $class->setAbstract();
@@ -117,8 +154,13 @@ class Parser
             }
         }
         if (isset($object->class)) {
-            $class = self::class($object->class, $args);
-            $namespace->add($class);
+            self::class($object->class, $args, $namespace);
+        }
+        if (isset($object->interface)) {
+            self::interface($object->interface, $args, $namespace);
+        }
+        if (isset($object->trait)) {
+            self::trait($object->trait, $args, $namespace);
         }
 
         return $namespace;
@@ -130,8 +172,8 @@ class Parser
 
         if (self::is($prop->visibility)) $property->setVisibility($prop->visibility);
         if (self::is($prop->static)) $property->setStatic($prop->static);
-        if (self::is($prop->nullable) && $prop->nullable) $property->setNullable($prop->nullable);
         if (self::is($prop->type)) $property->setType(MtrYml::parse($prop->type, $args));
+        if (self::is($prop->nullable) && $prop->nullable) $property->setNullable($prop->nullable);
         if (self::is($prop->value)) $property->setValue(MtrYml::parse($prop->value, $args));
         if (self::is($prop->init) && $prop->init) $property->setInitialized($prop->init);
         if (self::is($prop->comments)) {

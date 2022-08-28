@@ -1,2 +1,54 @@
-namespace:
-  name: MyNamespace
+name: string # name of the template
+
+filename: string # name of the generated file
+
+path: string # path where to generate the file
+
+file:
+  strict: true # boolean - if true, the file will start by declaring strict_types=1
+
+  use: # (optional) a string[] array with a list of dependencies to define with a use statement
+    - string
+    - string
+    - string
+
+  class: # (optional)
+    name: string # name of the class
+    modifier: abstract|final # class modifier
+    extends: string # fully qualified name of the extending class
+    implements: # array of strings with fully qualified names of interfaces this class implements
+      - string
+      - string
+    constants:
+      - name: string # name of the constant
+        value: any # value of the constant
+    methods:
+      - name: string # method name
+        return: string # return type of the method
+        nullable: false # boolean - if the method can return null
+        ref: true # if the method should return a reference
+        visibility: public|private|protected # visibility of the method
+        modifier: abstract|final # method modifier
+        params:
+          - name: string # parameter name
+            type: string # parameter type
+            value: any # parameter's default value - can be anything, even array or object
+            promoted: false # if the parameter is promoted (used in constructors)
+            nullable: true # if it can be null
+            ref: false # if it is passed by reference
+        body: # array of strings where each item represents a single line of the method body
+          - string
+          - string
+
+  interface: # (optional)
+    name: string # name of the interface
+
+  trait: # (optional)
+    name: string # name of the trait
+
+  namespace: # If you want to put your classes and whatnot in a namespace, you can define them here
+    name: string # fully qualified name of the namespace (eg. App\MyNamespace\DeeperLevel)
+    class: # Same as above
+    interface: # Same as above
+    trait: # Same as above
+    use: # Same as above

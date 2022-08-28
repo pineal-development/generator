@@ -53,7 +53,7 @@ final class MtrYml
                 $parsed = $contents ? json_decode($contents) : json_decode(file_get_contents($filename));
                 break;
             default:
-                throw new InvalidArgumentException("Unsupported extension value '{$extension[0]}'.");
+                throw new InvalidArgumentException("Unsupported extension value '{$extension}'.");
         }
 
         return $parsed;

@@ -22,7 +22,7 @@ file:
           name: dirPath
           value: app/model/database/entity
         - type: int
-          name: test
+          name: foo
           static: true
           init: true
           nullable: true

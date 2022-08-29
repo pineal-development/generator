@@ -12,11 +12,13 @@ use Symfony\Component\Yaml\Yaml;
 
 final class MtrYml
 {
+    public const PATTERN = '/<%\s?([a-zA-Z0-9_]+)\|?([a-zA-Z0-9_]+?)?\s?%>/m';
+
     public static function parse(mixed $string, array $arguments = []): mixed
     {
         if (!is_string($string)) return $string;
 
-        preg_match_all('/<%\s?([a-zA-Z0-9_]+)\|?([a-zA-Z0-9_]+?)?\s?%>/', $string, $matches);
+        preg_match_all(self::PATTERN, $string, $matches);
         $args = [];
         foreach ($matches[1] as $key => $match) {
             $args[] = $arguments[$match] ?? null;
@@ -63,7 +65,7 @@ final class MtrYml
 
     public static function getArguments(string $string): array
     {
-        preg_match_all('/<%\s?([a-zA-Z0-9_]+?)\s?%>/m', $string, $matches);
+        preg_match_all(self::PATTERN, $string, $matches);
 
         return array_unique($matches[1]);
     }
@@ -74,8 +76,8 @@ final class MtrYml
 
         foreach ($arguments as $key => $arg) {
             if ($matches[2][$key]) {
-                if (function_exists($matches[2][$key])) {
-                    $function = $matches[2][$key];
+                $function = $matches[2][$key];
+                if (function_exists($function)) {
                     $modified[$key] = $function($arg);
                 }
             }

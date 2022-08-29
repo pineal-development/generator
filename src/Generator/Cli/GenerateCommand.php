@@ -25,6 +25,8 @@ use Symfony\Component\Validator\Validation;
 // #[AsCommand('generate', 'Generate files', ['gen'])]
 class GenerateCommand extends Command
 {
+    use TRunCommand;
+
     protected static $defaultName = 'generate';
     protected static $defaultDescription = 'Generates files';
 
@@ -220,12 +222,5 @@ class GenerateCommand extends Command
         $io->newLine();
 
         return Command::SUCCESS;
-    }
-
-    private function runCommand(string $name, array $parameters, OutputInterface $output)
-    {
-        return $this->getApplication()
-            ->find($name)
-            ->run(new ArrayInput($parameters), $output);
     }
 }

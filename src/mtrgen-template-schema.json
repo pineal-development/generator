@@ -53,36 +53,13 @@
         "use": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Use"
+            "type": "string"
           }
         }
       },
       "required": [],
       "title": "File",
       "description": "Root level of the file containing the namespace, classes, use statements, etc"
-    },
-    "Use": {
-      "anyOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "alias": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "name"
-          ],
-          "title": "Use"
-        },
-        {
-          "type": "string"
-        }
-      ]
     },
     "Namespace": {
       "type": "object",
@@ -148,6 +125,18 @@
           "items": {
             "$ref": "#/definitions/Method"
           }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -176,6 +165,12 @@
           "items": {
             "$ref": "#/definitions/Method"
           }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -201,6 +196,12 @@
           "items": {
             "$ref": "#/definitions/Method"
           }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -217,6 +218,12 @@
         },
         "value": {
           "type": ["array", "boolean", "integer", "number", "string", "object", "null"]
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [

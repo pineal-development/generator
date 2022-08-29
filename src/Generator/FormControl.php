@@ -32,6 +32,9 @@ class FormControl
             ->setType(self::getFullClass($name, $entity, true))
             ->addComment("@var {$name}FormFactory @inject");
 
+        $class->addProperty('onSuccess')
+            ->addComment("@var mixed[]");
+
         $class->addProperty(lcfirst($name.'Form'))
             ->setType(self::getFullClass($name, $entity))
             ->addComment("@var {$name}Form");

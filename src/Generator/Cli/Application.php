@@ -22,6 +22,9 @@ class Application
             new GenerateControlCommand(),
             new GeneratePresenterCommand(),
             new GenerateFromTemplateCommand(),
+            new SaveTemplateCommand(),
+            new LoadTemplateCommand(),
+            new RemoveTemplateCommand(),
         ]);
         $this->app->setDefaultCommand('generate');
     }

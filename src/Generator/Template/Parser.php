@@ -13,14 +13,26 @@ use Nette\PhpGenerator\Property;
 
 class Parser
 {
+    public static function parse(string $filename, string $contents, array $arguments)
+    {
+        $object = MtrYml::parseByExtension($filename, $contents);
+
+        return self::generateFile($object, $arguments);
+    }
+
     public static function parseFile(string $path, array $arguments)
     {
         $object = MtrYml::parseByExtension($path);
 
-        $filename = MtrYml::parse($object->filename, $arguments);
-        $outDir = MtrYml::parse($object->path, $arguments);
+        return self::generateFile($object, $arguments);
+    }
 
-        $file = self::generate($object->file, $arguments);
+    public static function generateFile(object $parsed, array $arguments): FileObject
+    {
+        $filename = MtrYml::parse($parsed->filename, $arguments);
+        $outDir = MtrYml::parse(Path::canonicalize($parsed->path) . DIRECTORY_SEPARATOR, $arguments);
+
+        $file = self::generate($parsed->file, $arguments);
 
         return new FileObject($outDir, $filename, $file);
     }
@@ -140,6 +152,11 @@ class Parser
                 $class->addMember($classMethod);
             }
         }
+        if (self::is($object->comments)) {
+            foreach ($object->comments as $comment) {
+                $class->addComment(MtrYml::parse($comment, $args));
+            }
+        }
 
         return $class;
     }
@@ -150,7 +167,12 @@ class Parser
 
         if (self::is($object->use)) {
             foreach ($object->use as $use) {
-                $namespace->addUse(MtrYml::parse($use, $args));
+                if (strpos($use, ' as ') !== false) {
+                    $parts = explode(' as ', $use);
+                    $namespace->addUse(MtrYml::parse($parts[0], $args), MtrYml::parse($parts[1], $args));
+                } else {
+                    $namespace->addUse(MtrYml::parse($use, $args));
+                }
             }
         }
         if (isset($object->class)) {

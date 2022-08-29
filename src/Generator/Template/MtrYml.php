@@ -16,11 +16,13 @@ final class MtrYml
     {
         if (!is_string($string)) return $string;
 
-        preg_match_all('/<%\s?([a-zA-Z0-9_]+?)\s?%>/', $string, $matches);
+        preg_match_all('/<%\s?([a-zA-Z0-9_]+)\|?([a-zA-Z0-9_]+?)?\s?%>/', $string, $matches);
         $args = [];
         foreach ($matches[1] as $key => $match) {
             $args[] = $arguments[$match] ?? null;
         }
+
+        $args = self::applyFilters($matches, $args);
 
         return str_replace($matches[0], $args, $string);
     }
@@ -64,5 +66,21 @@ final class MtrYml
         preg_match_all('/<%\s?([a-zA-Z0-9_]+?)\s?%>/m', $string, $matches);
 
         return array_unique($matches[1]);
+    }
+
+    public static function applyFilters(array $matches, array $arguments)
+    {
+        $modified = $arguments;
+
+        foreach ($arguments as $key => $arg) {
+            if ($matches[2][$key]) {
+                if (function_exists($matches[2][$key])) {
+                    $function = $matches[2][$key];
+                    $modified[$key] = $function($arg);
+                }
+            }
+        }
+
+        return $modified;
     }
 }

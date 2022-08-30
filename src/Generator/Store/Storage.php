@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator\Template;
+namespace Matronator\Generator\Store;
 
 use Matronator\Generator\FileGenerator;
+use Matronator\Generator\Template\Generator;
 
 class Storage
 {
@@ -43,7 +44,7 @@ class Storage
         if (!file_exists($file))
             return false;
 
-        $this->saveEntry($alias ?? Parser::getName($file), $basename);
+        $this->saveEntry($alias ?? Generator::getName($file), $basename);
         copy($file, Path::canonicalize($this->templateDir . DIRECTORY_SEPARATOR . $basename));
 
         return true;

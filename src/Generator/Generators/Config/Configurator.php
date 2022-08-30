@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator\Config;
+namespace Matronator\Generator\Generators\Config;
 
+use Matronator\Generator\Config\Configuration;
 use Matronator\Generator\Debug;
-use Matronator\Generator\Entity;
-use Matronator\Generator\Facade;
-use Matronator\Generator\FileObject;
-use Matronator\Generator\Form;
-use Matronator\Generator\Form\FormField;
-use Matronator\Generator\Form\FormFieldOptions;
-use Matronator\Generator\FormControl;
-use Matronator\Generator\FormControlFactory;
-use Matronator\Generator\FormFactory;
-use Matronator\Generator\Repository;
+use Matronator\Generator\Generators\Entity;
+use Matronator\Generator\Generators\Facade;
+use Matronator\Generator\Generators\Form;
+use Matronator\Generator\Generators\Form\FormFieldOptions;
+use Matronator\Generator\Generators\FormControl;
+use Matronator\Generator\Generators\FormControlFactory;
+use Matronator\Generator\Generators\FormFactory;
+use Matronator\Generator\Generators\Repository;
 use Symfony\Component\Yaml\Yaml;
 
 final class Configurator

@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Cli;
 
-use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Template\MtrYml;
-use Matronator\Generator\Template\Parser;
-use Matronator\Generator\Template\Storage;
-use SplFileObject;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Matronator\Generator\Store\Storage;
+use Matronator\Generator\Template\Generator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -55,7 +51,7 @@ class SaveTemplateCommand extends Command
 
         $storage = new Storage;
         if ($storage->save($path, $alias)) {
-            $name = $alias ?? Parser::getName($path);
+            $name = $alias ?? Generator::getName($path);
             $output->writeln("<fg=green>Template '$name' added from '$path'!</>");
             $io->newLine();
 

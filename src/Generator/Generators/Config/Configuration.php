@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator\Config;
-
-use Matronator\Generator\Form\FormFieldOptions;
+namespace Matronator\Generator\Generators\Config;
 
 class Configuration
 {

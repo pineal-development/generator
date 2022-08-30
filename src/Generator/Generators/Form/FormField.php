@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator\Form;
+namespace Matronator\Generator\Generators\Form;
 
 class FormField
 {

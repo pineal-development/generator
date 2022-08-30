@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Cli;
 
-use Matronator\Generator\Facade;
 use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Presenter;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Matronator\Generator\Generators\Presenter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

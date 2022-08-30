@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Cli;
 
-use Matronator\Generator\Entity;
-use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Template\Parser;
-use Matronator\Generator\Template\Storage;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Matronator\Generator\Store\Storage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

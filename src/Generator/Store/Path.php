@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator\Template;
+namespace Matronator\Generator\Store;
 
 use RuntimeException;
 

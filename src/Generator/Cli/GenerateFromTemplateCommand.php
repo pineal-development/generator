@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Matronator\Generator\Cli;
 
 use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Template\MtrYml;
+use Matronator\Generator\Template\Generator;
 use Matronator\Generator\Template\Parser;
 use SplFileObject;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -60,7 +59,7 @@ class GenerateFromTemplateCommand extends Command
             $output->writeln('<fg=green>Template found!</>');
             $output->writeln('Looking for template parameters...');
 
-            $args = MtrYml::getArguments($template);
+            $args = Parser::getArguments($template);
             if ($args !== []) {
                 $io->writeln('<fg=green>Template parameters found!</>');
                 $io->newLine();
@@ -73,12 +72,12 @@ class GenerateFromTemplateCommand extends Command
             }
         }
 
-        $name = Parser::getName($path);
+        $name = Generator::getName($path);
 
         $output->writeln("Generating file from template <options=bold>{$name}</>...");
         $io->newLine();
 
-        FileGenerator::writeFile(Parser::parseFile($path, $arguments));
+        FileGenerator::writeFile(Generator::parseFile($path, $arguments));
 
         $output->writeln('<fg=green>Done!</>');
         $io->newLine();

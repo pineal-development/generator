@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Cli;
 
-use Matronator\Generator\Config\Configurator;
-use Matronator\Generator\Entity;
-use Matronator\Generator\Facade;
 use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Repository;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Matronator\Generator\Generators\Config\Configurator;
+use Matronator\Generator\Generators\Entity;
+use Matronator\Generator\Generators\Facade;
+use Matronator\Generator\Generators\Repository;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

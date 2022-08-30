@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Matronator\Generator\Cli;
 
 use Matronator\Generator\FileGenerator;
-use Matronator\Generator\Form;
-use Matronator\Generator\FormControl;
-use Matronator\Generator\FormControlFactory;
-use Matronator\Generator\Repository;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Matronator\Generator\Generators\FormControl;
+use Matronator\Generator\Generators\FormControlFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

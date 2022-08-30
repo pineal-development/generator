@@ -4,256 +4,85 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Template;
 
-use Matronator\Generator\FileObject;
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\Method;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\Property;
+use InvalidArgumentException;
+use Nette\FileNotFoundException;
+use Nette\Neon\Neon;
+use SplFileObject;
+use Symfony\Component\Yaml\Yaml;
 
-class Parser
+final class Parser
 {
-    public static function parse(string $filename, string $contents, array $arguments)
+    public const PATTERN = '/<%\s?([a-zA-Z0-9_]+)\|?([a-zA-Z0-9_]+?)?\s?%>/m';
+
+    public static function parse(mixed $string, array $arguments = []): mixed
     {
-        $object = MtrYml::parseByExtension($filename, $contents);
+        if (!is_string($string)) return $string;
 
-        return self::generateFile($object, $arguments);
-    }
-
-    public static function parseFile(string $path, array $arguments)
-    {
-        $object = MtrYml::parseByExtension($path);
-
-        return self::generateFile($object, $arguments);
-    }
-
-    public static function generateFile(object $parsed, array $arguments): FileObject
-    {
-        $filename = MtrYml::parse($parsed->filename, $arguments);
-        $outDir = MtrYml::parse(Path::canonicalize($parsed->path) . DIRECTORY_SEPARATOR, $arguments);
-
-        $file = self::generate($parsed->file, $arguments);
-
-        return new FileObject($outDir, $filename, $file);
-    }
-
-    public static function getName(string $path)
-    {
-        $object = MtrYml::parseByExtension($path);
-
-        return $object->name;
-    }
-
-    public static function generate(object $body, array $args): PhpFile
-    {
-        $file = new PhpFile;
-
-        if (self::is($body->strict) && $body->strict === true) $file->setStrictTypes();
-
-        if (isset($body->namespace)) {
-            self::namespace($body->namespace, $file, $args);
+        preg_match_all(self::PATTERN, $string, $matches);
+        $args = [];
+        foreach ($matches[1] as $key => $match) {
+            $args[] = $arguments[$match] ?? null;
         }
 
-        if (isset($body->class)) {
-            self::class($body->class, $args, $file);
-        }
-        if (isset($body->interface)) {
-            self::interface($body->interface, $args, $file);
-        }
-        if (isset($body->trait)) {
-            self::trait($body->trait, $args, $file);
-        }
+        $args = self::applyFilters($matches, $args);
 
-        return $file;
+        return str_replace($matches[0], $args, $string);
     }
 
-    /**
-     * @return ClassType
-     * @param object $object
-     * @param array $args
-     * @param PhpFile|PhpNamespace|null $parent
-     */
-    private static function class(object $object, array $args, mixed &$parent = null): ClassType
+    public static function parseFile(string $filename, array $arguments = []): object
     {
-        $class = !$parent ? new ClassType(MtrYml::parse($object->name, $args)) : $parent->addClass(MtrYml::parse($object->name, $args));
-
-        return self::defineObject($object, $args, $class);
+        $contents = file_get_contents($filename);
+        $parsed = self::parse($contents, $arguments);
+        return self::parseByExtension($filename, $parsed);
     }
 
-    /**
-     * @return ClassType
-     * @param object $object
-     * @param array $args
-     * @param PhpFile|PhpNamespace|null $parent
-     */
-    private static function interface(object $object, array $args, mixed &$parent = null): ClassType
+    public static function parseByExtension(string $filename, ?string $contents = null): object
     {
-        $interface = !$parent ? ClassType::interface(MtrYml::parse($object->name, $args)) : $parent->addInterface(MtrYml::parse($object->name, $args));
+        if (!file_exists($filename) && !$contents)
+            throw new FileNotFoundException("File '$filename' does not exist.");
 
-        return self::defineObject($object, $args, $interface);
+        $file = new SplFileObject($filename);
+
+        $extension = $file->getExtension();
+
+        switch ($extension) {
+            case 'yml':
+            case 'yaml':
+                $parsed = $contents ? Yaml::parse($contents, Yaml::PARSE_OBJECT_FOR_MAP) : Yaml::parseFile($filename, Yaml::PARSE_OBJECT_FOR_MAP);
+                break;
+            case 'neon':
+                $parsed = $contents ? Neon::decode($contents) : Neon::decodeFile($filename);
+                break;
+            case 'json':
+                $parsed = $contents ? json_decode($contents) : json_decode(file_get_contents($filename));
+                break;
+            default:
+                throw new InvalidArgumentException("Unsupported extension value '{$extension}'.");
+        }
+
+        return $parsed;
     }
 
-    /**
-     * @return ClassType
-     * @param object $object
-     * @param array $args
-     * @param PhpFile|PhpNamespace|null $parent
-     */
-    private static function trait(object $object, array $args, mixed &$parent = null): ClassType
+    public static function getArguments(string $string): array
     {
-        $trait = !$parent ? ClassType::trait(MtrYml::parse($object->name, $args)) : $parent->addTrait(MtrYml::parse($object->name, $args));
+        preg_match_all(self::PATTERN, $string, $matches);
 
-        return self::defineObject($object, $args, $trait);
+        return array_unique($matches[1]);
     }
 
-    /**
-     * @return ClassType
-     * @param object $object
-     * @param array $args
-     * @param ClassType $class
-     */
-    private static function defineObject(object $object, array $args, ClassType $class): ClassType
+    public static function applyFilters(array $matches, array $arguments)
     {
-        if (self::is($object->modifier)) {
-            if ($object->modifier === 'final') $class->setFinal();
-            if ($object->modifier === 'abstract') $class->setAbstract();
-        }
-        if (self::is($object->extends)) $class->setExtends(MtrYml::parse($object->extends, $args));
-        if (self::is($object->implements)) {
-            foreach ($object->implements as $implement) {
-                $class->addImplements(MtrYml::parse($implement, $args));
-            }
-        }
-        if (self::is($object->traits)) {
-            foreach ($object->traits as $trait) {
-                $class->addTrait(MtrYml::parse($trait, $args));
-            }
-        }
-        if (self::is($object->constants)) {
-            foreach ($object->constants as $const) {
-                $constant = $class->addConstant(MtrYml::parse($const->name, $args), MtrYml::parse($const->value, $args));
-                if (self::is($const->visibility)) $constant->setVisibility($const->visibility);
-                if (self::is($const->comments)) {
-                    foreach ($const->comments as $comment) {
-                        $constant->addComment(MtrYml::parse($comment, $args));
-                    }
+        $modified = $arguments;
+
+        foreach ($arguments as $key => $arg) {
+            if ($matches[2][$key]) {
+                $function = $matches[2][$key];
+                if (function_exists($function)) {
+                    $modified[$key] = $function($arg);
                 }
             }
         }
-        if (self::is($object->props)) {
-            foreach ($object->props as $prop) {
-                $property = self::property($prop, $args);
-                $class->addMember($property);
-            }
-        }
-        if (self::is($object->methods)) {
-            foreach ($object->methods as $method) {
-                $classMethod = self::method($method, $args);
-                $class->addMember($classMethod);
-            }
-        }
-        if (self::is($object->comments)) {
-            foreach ($object->comments as $comment) {
-                $class->addComment(MtrYml::parse($comment, $args));
-            }
-        }
 
-        return $class;
-    }
-
-    private static function namespace(object $object, PhpFile &$file, array $args): PhpNamespace
-    {
-        $namespace = $file->addNamespace(MtrYml::parse($object->name, $args));
-
-        if (self::is($object->use)) {
-            foreach ($object->use as $use) {
-                if (strpos($use, ' as ') !== false) {
-                    $parts = explode(' as ', $use);
-                    $namespace->addUse(MtrYml::parse($parts[0], $args), MtrYml::parse($parts[1], $args));
-                } else {
-                    $namespace->addUse(MtrYml::parse($use, $args));
-                }
-            }
-        }
-        if (isset($object->class)) {
-            self::class($object->class, $args, $namespace);
-        }
-        if (isset($object->interface)) {
-            self::interface($object->interface, $args, $namespace);
-        }
-        if (isset($object->trait)) {
-            self::trait($object->trait, $args, $namespace);
-        }
-
-        return $namespace;
-    }
-
-    private static function property(object $prop, array $args): Property
-    {
-        $property = new Property(MtrYml::parse($prop->name, $args));
-
-        if (self::is($prop->visibility)) $property->setVisibility($prop->visibility);
-        if (self::is($prop->static)) $property->setStatic($prop->static);
-        if (self::is($prop->type)) $property->setType(MtrYml::parse($prop->type, $args));
-        if (self::is($prop->nullable) && $prop->nullable) $property->setNullable($prop->nullable);
-        if (self::is($prop->value)) $property->setValue(MtrYml::parse($prop->value, $args));
-        if (self::is($prop->init) && $prop->init) $property->setInitialized($prop->init);
-        if (self::is($prop->comments)) {
-            foreach ($prop->comments as $comment) {
-                $property->addComment(MtrYml::parse($comment, $args));
-            }
-        }
-
-        return $property;
-    }
-
-    private static function method(object $object, array $args): Method
-    {
-        $method = new Method(MtrYml::parse($object->name, $args));
-
-        if (self::is($object->modifier)) {
-            if ($object->modifier === 'final') $method->setFinal();
-            if ($object->modifier === 'abstract') $method->setAbstract();
-        }
-        if (self::is($object->visibility)) $method->setVisibility($object->visibility);
-        if (self::is($object->static)) $method->setStatic($object->static);
-        if (self::is($object->nullable) && $object->nullable) $method->setReturnNullable($object->nullable);
-        if (self::is($object->ref) && $object->ref) $method->setReturnReference($object->ref);
-        if (self::is($object->return)) $method->setReturnType(MtrYml::parse($object->return, $args));
-        if (self::is($object->comments)) {
-            foreach ($object->comments as $comment) {
-                $method->addComment(MtrYml::parse($comment, $args));
-            }
-        }
-        if (self::is($object->params)) {
-            foreach ($object->params as $param) {
-                if (isset($param->promoted) && $param->promoted) {
-                    $promotedParam = $method->addPromotedParameter(MtrYml::parse($param->name, $args));
-                    if (self::is($param->nullable) && $param->nullable) $promotedParam->setNullable($param->nullable);
-                    if (self::is($param->type)) $promotedParam->setType(MtrYml::parse($param->type, $args));
-                    if (self::is($param->value)) $promotedParam->setDefaultValue(MtrYml::parse($param->value, $args));
-                    if (self::is($param->ref) && $param->ref) $promotedParam->setReference($param->ref);
-                    if (self::is($param->visibility)) $promotedParam->setVisibility($param->visibility);
-                } else {
-                    $parameter = $method->addParameter(MtrYml::parse($param->name, $args));
-                    if (self::is($param->nullable) && $param->nullable) $parameter->setNullable($param->nullable);
-                    if (self::is($param->type)) $parameter->setType(MtrYml::parse($param->type, $args));
-                    if (self::is($param->value)) $parameter->setDefaultValue(MtrYml::parse($param->value, $args));
-                    if (self::is($param->ref) && $param->ref) $parameter->setReference($param->ref);
-                }
-            }
-        }
-        if (self::is($object->body)) {
-            foreach ($object->body as $body) {
-                $method->addBody(MtrYml::parse($body, $args));
-            }
-        }
-
-        return $method;
-    }
-
-    public static function is(mixed &$subject): bool
-    {
-        return is_array($subject) ? isset($subject) && count($subject) > 0 : isset($subject);
+        return $modified;
     }
 }

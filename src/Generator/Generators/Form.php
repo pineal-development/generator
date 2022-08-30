@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator;
+namespace Matronator\Generator\Generators;
 
 use Matronator\Generator\FileObject;
-use Matronator\Generator\Form\FormField;
-use Matronator\Generator\Form\FormFieldOptions;
+use Matronator\Generator\Generators\Form\FormField;
+use Matronator\Generator\Generators\Form\FormFieldOptions;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
+use function Matronator\Generator\array_key_last;
 
 class Form
 {

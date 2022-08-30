@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Matronator\Generator;
+namespace Matronator\Generator\Generators;
 
 use Matronator\Generator\FileObject;
 use Nette\PhpGenerator\PhpFile;

@@ -33,7 +33,9 @@
         "nette/safe-stream": "^2.5",
         "symfony/yaml": "^5.4",
         "symfony/validator": "^5.4",
-        "spatie/yaml-front-matter": "^2.0"
+        "nette/finder": "^2.5",
+        "opis/json-schema": "^2.3",
+        "matronator/parsem": "^1.0"
     },
     "minimum-stability": "stable",
     "config": {

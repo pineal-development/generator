@@ -6,6 +6,7 @@ namespace Matronator\Generator\Template;
 
 use Matronator\Generator\FileObject;
 use Matronator\Generator\Store\Path;
+use Matronator\Parsem\Parser;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
@@ -16,22 +17,22 @@ class Generator
 {
     public static function parse(string $filename, string $contents, array $arguments): FileObject
     {
-        $object = Parser::parseByExtension($filename, $contents);
+        $object = Parser::decodeByExtension($filename, $contents);
 
         return self::generateFile($object, $arguments);
     }
 
     public static function parseFile(string $path, array $arguments): FileObject
     {
-        $object = Parser::parseByExtension($path);
+        $object = Parser::decodeByExtension($path);
 
         return self::generateFile($object, $arguments);
     }
 
     public static function generateFile(object $parsed, array $arguments): FileObject
     {
-        $filename = Parser::parse($parsed->filename, $arguments);
-        $outDir = Parser::parse(Path::canonicalize($parsed->path) . DIRECTORY_SEPARATOR, $arguments);
+        $filename = Parser::parseString($parsed->filename, $arguments);
+        $outDir = Parser::parseString(Path::canonicalize($parsed->path) . DIRECTORY_SEPARATOR, $arguments);
 
         $file = self::generate($parsed->file, $arguments);
 
@@ -40,7 +41,7 @@ class Generator
 
     public static function getName(string $path)
     {
-        $object = Parser::parseByExtension($path);
+        $object = Parser::decodeByExtension($path);
 
         return $object->name;
     }
@@ -76,7 +77,7 @@ class Generator
      */
     private static function class(object $object, array $args, mixed &$parent = null): ClassType
     {
-        $class = !$parent ? new ClassType(Parser::parse($object->name, $args)) : $parent->addClass(Parser::parse($object->name, $args));
+        $class = !$parent ? new ClassType(Parser::parseString($object->name, $args)) : $parent->addClass(Parser::parseString($object->name, $args));
 
         return self::defineObject($object, $args, $class);
     }
@@ -89,7 +90,7 @@ class Generator
      */
     private static function interface(object $object, array $args, mixed &$parent = null): ClassType
     {
-        $interface = !$parent ? ClassType::interface(Parser::parse($object->name, $args)) : $parent->addInterface(Parser::parse($object->name, $args));
+        $interface = !$parent ? ClassType::interface(Parser::parseString($object->name, $args)) : $parent->addInterface(Parser::parseString($object->name, $args));
 
         return self::defineObject($object, $args, $interface);
     }
@@ -102,7 +103,7 @@ class Generator
      */
     private static function trait(object $object, array $args, mixed &$parent = null): ClassType
     {
-        $trait = !$parent ? ClassType::trait(Parser::parse($object->name, $args)) : $parent->addTrait(Parser::parse($object->name, $args));
+        $trait = !$parent ? ClassType::trait(Parser::parseString($object->name, $args)) : $parent->addTrait(Parser::parseString($object->name, $args));
 
         return self::defineObject($object, $args, $trait);
     }
@@ -119,24 +120,24 @@ class Generator
             if ($object->modifier === 'final') $class->setFinal();
             if ($object->modifier === 'abstract') $class->setAbstract();
         }
-        if (self::is($object->extends)) $class->setExtends(Parser::parse($object->extends, $args));
+        if (self::is($object->extends)) $class->setExtends(Parser::parseString($object->extends, $args));
         if (self::is($object->implements)) {
             foreach ($object->implements as $implement) {
-                $class->addImplements(Parser::parse($implement, $args));
+                $class->addImplements(Parser::parseString($implement, $args));
             }
         }
         if (self::is($object->traits)) {
             foreach ($object->traits as $trait) {
-                $class->addTrait(Parser::parse($trait, $args));
+                $class->addTrait(Parser::parseString($trait, $args));
             }
         }
         if (self::is($object->constants)) {
             foreach ($object->constants as $const) {
-                $constant = $class->addConstant(Parser::parse($const->name, $args), Parser::parse($const->value, $args));
+                $constant = $class->addConstant(Parser::parseString($const->name, $args), Parser::parseString($const->value, $args));
                 if (self::is($const->visibility)) $constant->setVisibility($const->visibility);
                 if (self::is($const->comments)) {
                     foreach ($const->comments as $comment) {
-                        $constant->addComment(Parser::parse($comment, $args));
+                        $constant->addComment(Parser::parseString($comment, $args));
                     }
                 }
             }
@@ -155,7 +156,7 @@ class Generator
         }
         if (self::is($object->comments)) {
             foreach ($object->comments as $comment) {
-                $class->addComment(Parser::parse($comment, $args));
+                $class->addComment(Parser::parseString($comment, $args));
             }
         }
 
@@ -164,15 +165,15 @@ class Generator
 
     private static function namespace(object $object, PhpFile &$file, array $args): PhpNamespace
     {
-        $namespace = $file->addNamespace(Parser::parse($object->name, $args));
+        $namespace = $file->addNamespace(Parser::parseString($object->name, $args));
 
         if (self::is($object->use)) {
             foreach ($object->use as $use) {
                 if (strpos($use, ' as ') !== false) {
                     $parts = explode(' as ', $use);
-                    $namespace->addUse(Parser::parse($parts[0], $args), Parser::parse($parts[1], $args));
+                    $namespace->addUse(Parser::parseString($parts[0], $args), Parser::parseString($parts[1], $args));
                 } else {
-                    $namespace->addUse(Parser::parse($use, $args));
+                    $namespace->addUse(Parser::parseString($use, $args));
                 }
             }
         }
@@ -191,17 +192,17 @@ class Generator
 
     private static function property(object $prop, array $args): Property
     {
-        $property = new Property(Parser::parse($prop->name, $args));
+        $property = new Property(Parser::parseString($prop->name, $args));
 
         if (self::is($prop->visibility)) $property->setVisibility($prop->visibility);
         if (self::is($prop->static)) $property->setStatic($prop->static);
-        if (self::is($prop->type)) $property->setType(Parser::parse($prop->type, $args));
+        if (self::is($prop->type)) $property->setType(Parser::parseString($prop->type, $args));
         if (self::is($prop->nullable) && $prop->nullable) $property->setNullable($prop->nullable);
-        if (self::is($prop->value)) $property->setValue(Parser::parse($prop->value, $args));
+        if (self::is($prop->value)) $property->setValue(Parser::parseString($prop->value, $args));
         if (self::is($prop->init) && $prop->init) $property->setInitialized($prop->init);
         if (self::is($prop->comments)) {
             foreach ($prop->comments as $comment) {
-                $property->addComment(Parser::parse($comment, $args));
+                $property->addComment(Parser::parseString($comment, $args));
             }
         }
 
@@ -210,7 +211,7 @@ class Generator
 
     private static function method(object $object, array $args): Method
     {
-        $method = new Method(Parser::parse($object->name, $args));
+        $method = new Method(Parser::parseString($object->name, $args));
 
         if (self::is($object->modifier)) {
             if ($object->modifier === 'final') $method->setFinal();
@@ -220,33 +221,33 @@ class Generator
         if (self::is($object->static)) $method->setStatic($object->static);
         if (self::is($object->nullable) && $object->nullable) $method->setReturnNullable($object->nullable);
         if (self::is($object->ref) && $object->ref) $method->setReturnReference($object->ref);
-        if (self::is($object->return)) $method->setReturnType(Parser::parse($object->return, $args));
+        if (self::is($object->return)) $method->setReturnType(Parser::parseString($object->return, $args));
         if (self::is($object->comments)) {
             foreach ($object->comments as $comment) {
-                $method->addComment(Parser::parse($comment, $args));
+                $method->addComment(Parser::parseString($comment, $args));
             }
         }
         if (self::is($object->params)) {
             foreach ($object->params as $param) {
                 if (isset($param->promoted) && $param->promoted) {
-                    $promotedParam = $method->addPromotedParameter(Parser::parse($param->name, $args));
+                    $promotedParam = $method->addPromotedParameter(Parser::parseString($param->name, $args));
                     if (self::is($param->nullable) && $param->nullable) $promotedParam->setNullable($param->nullable);
-                    if (self::is($param->type)) $promotedParam->setType(Parser::parse($param->type, $args));
-                    if (self::is($param->value)) $promotedParam->setDefaultValue(Parser::parse($param->value, $args));
+                    if (self::is($param->type)) $promotedParam->setType(Parser::parseString($param->type, $args));
+                    if (self::is($param->value)) $promotedParam->setDefaultValue(Parser::parseString($param->value, $args));
                     if (self::is($param->ref) && $param->ref) $promotedParam->setReference($param->ref);
                     if (self::is($param->visibility)) $promotedParam->setVisibility($param->visibility);
                 } else {
-                    $parameter = $method->addParameter(Parser::parse($param->name, $args));
+                    $parameter = $method->addParameter(Parser::parseString($param->name, $args));
                     if (self::is($param->nullable) && $param->nullable) $parameter->setNullable($param->nullable);
-                    if (self::is($param->type)) $parameter->setType(Parser::parse($param->type, $args));
-                    if (self::is($param->value)) $parameter->setDefaultValue(Parser::parse($param->value, $args));
+                    if (self::is($param->type)) $parameter->setType(Parser::parseString($param->type, $args));
+                    if (self::is($param->value)) $parameter->setDefaultValue(Parser::parseString($param->value, $args));
                     if (self::is($param->ref) && $param->ref) $parameter->setReference($param->ref);
                 }
             }
         }
         if (self::is($object->body)) {
             foreach ($object->body as $body) {
-                $method->addBody(Parser::parse($body, $args));
+                $method->addBody(Parser::parseString($body, $args));
             }
         }
 

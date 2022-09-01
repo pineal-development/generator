@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Matronator\Generator;
 
+use Matronator\Generator\Store\Path;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\Neon\Neon;
 use Nette\PhpGenerator\Printer;
@@ -34,7 +35,7 @@ class FileGenerator
             mkdir($file->directory, 0777, true);
         }
 
-        file_put_contents($file->directory . $file->filename, $printer->printFile($file->contents));
+        file_put_contents(Path::safe($file->directory . $file->filename), $printer->printFile($file->contents));
 
         if (stripos($file->filename, 'Facade') !== false) {
             self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
@@ -59,20 +60,20 @@ class FileGenerator
         switch ($extension[1]) {
             case 'yaml':
             case 'yml':
-                $yaml = Yaml::parseFile($config);
+                $yaml = Yaml::parseFile(Path::safe($config));
                 $yaml['services'][lcfirst(str_replace('.php', '', $filename))] = [
                     $type => $class,
                     'inject' => true,
                 ];
-                file_put_contents('nette.safe://'.$config, Yaml::dump($yaml));
+                file_put_contents(Path::safe($config), Yaml::dump($yaml));
                 break;
             case 'neon':
-                $neon = Neon::decodeFile($config);
+                $neon = Neon::decodeFile(Path::safe($config));
                 $neon['services'][lcfirst(str_replace('.php', '', $filename))] = [
                     $type => $class,
                     'inject' => true,
                 ];
-                file_put_contents('nette.safe://'.$config, Neon::encode($neon, Neon::BLOCK));
+                file_put_contents(Path::safe($config), Neon::encode($neon, Neon::BLOCK));
                 break;
         }
     }

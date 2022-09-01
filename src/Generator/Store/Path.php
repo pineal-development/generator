@@ -150,4 +150,14 @@ class Path
 
         return [$root, $path];
     }
+
+    /**
+     * Return a filename in Nette safe-stream for reading and writing.
+     * @return string
+     * @param string $filename
+     */
+    public static function safe(string $filename): string
+    {
+        return 'nette.safe://' . $filename;
+    }
 }

@@ -6,6 +6,8 @@ namespace Matronator\Generator\Store;
 
 use Matronator\Generator\FileGenerator;
 use Matronator\Generator\Template\Generator;
+use Matronator\Parsem\Parser;
+use Nette\Utils\Finder;
 
 class Storage
 {
@@ -69,13 +71,40 @@ class Storage
     }
 
     /**
+     * Save all templates from a folder.
+     * @return int|null The number of saved templates or null on fail
+     * @param string $path Path to the folder
+     */
+    public function saveFolder(string $path): ?int
+    {
+        $path = Path::canonicalize($path);
+        if (!FileGenerator::folderExist($path))
+            return null;
+
+        $store = $this->loadStore();
+
+        $files = Finder::findFiles('*.template.yaml', '*.template.json', '*.template.neon')->in($path);
+        $added = 0;
+        foreach ($files as $key => $file) {
+            if (!Parser::isValid($key)) continue;
+
+            $store = $this->entry($store, Generator::getName($key), $key);
+            $added++;
+        }
+
+        $this->saveStore($store);
+
+        return $added;
+    }
+
+    /**
      * Returns the template contents or false
      * @return string|false
      * @param string $name Name under which the template is stored
      */
     public function getContent(string $name): string
     {
-        return file_get_contents($this->getFilename($name));
+        return file_get_contents(Path::safe($this->getFilename($name)));
     }
 
     /**
@@ -135,12 +164,18 @@ class Storage
 
     private function loadStore(): object
     {
-        return json_decode(file_get_contents($this->store));
+        return json_decode(file_get_contents(Path::safe($this->store)));
     }
 
     private function saveStore(object $store): void
     {
-        file_put_contents($this->store, json_encode($store));
+        file_put_contents(Path::safe($this->store), json_encode($store));
+    }
+
+    private function entry(object $store, string $name, string $filename): object
+    {
+        $store->templates->{$name} = $filename;
+        return $store;
     }
 
     private function saveEntry(string $name, string $filename): void

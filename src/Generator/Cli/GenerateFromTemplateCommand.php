@@ -6,7 +6,7 @@ namespace Matronator\Generator\Cli;
 
 use Matronator\Generator\FileGenerator;
 use Matronator\Generator\Template\Generator;
-use Matronator\Generator\Template\Parser;
+use Matronator\Parsem\Parser;
 use SplFileObject;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

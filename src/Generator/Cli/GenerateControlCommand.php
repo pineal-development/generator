@@ -36,6 +36,8 @@ class GenerateControlCommand extends Command
         $output->writeln($entity ? "Generating <options=bold>{$name}FormControlFactory</> to entity {$entity}..." : "Generating <options=bold>{$name}FormControlFactory</>...");
         FileGenerator::writeFile([FormControl::generate($name, $entity), FormControlFactory::generate($name, $entity)]);
 
+        FormControl::generateTemplate($name, $entity);
+
         $output->writeln('<fg=green>Done!</>');
 
         return self::SUCCESS;

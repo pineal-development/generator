@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["generator", "file generator", "php-generator"],
     "license": "MIT",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "readme": "README.md",
     "autoload": {
         "psr-4": {
@@ -23,7 +23,8 @@
     "scripts": {
         "post-root-package-install": [
             "php bin/console completion bash | sudo tee /etc/bash_completion.d/console-events-terminate"
-        ]
+        ],
+        "test": "tester ."
     },
     "require": {
         "php": ">=7.4",

@@ -20,7 +20,9 @@
             "pineal/Entity.template.yaml",
             "pineal/Entity.template.yaml",
             "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/pineal/Entity.template.yaml",
-            "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/pineal/Repository.template.yaml"
+            "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/pineal/Repository.template.yaml",
+            "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/pineal/Facade.template.yaml",
+            "file:///Users/matejbystricky/Documents/Work.nosync/Matronator%20Brand/projects/genetterator/pineal/FormFactory.template.yaml"
         ]
     }
 }

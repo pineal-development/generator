@@ -1,5 +1,7 @@
 # Matronator/Generator
 
+![MTRGen Logo](.github/logo.png)
+
 Automatically generate Entity and related files from the console.
 
 ## Instalation

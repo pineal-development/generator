@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Generators;
 
+use Matronator\Generator\FileGenerator;
 use Matronator\Generator\FileObject;
 use Nette\PhpGenerator\PhpFile;
 
@@ -68,6 +69,16 @@ class FormControl
             ->addBody('$this->template->render();');
 
         return new FileObject(self::DIR_PATH . ($entity ? "$entity/" : ''), $name.'FormControl', $file, $entity);
+    }
+
+    public static function generateTemplate(string $name, ?string $entity = null): void
+    {
+        $dir = self::DIR_PATH.($entity ? "$entity/" : '/').'templates/';
+        if (!FileGenerator::folderExist($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        file_put_contents($dir . lcfirst($name.'FormControl.latte'), '{form ' . lcfirst($name.'Form') . '}'.PHP_EOL.'{/form}'.PHP_EOL);
     }
 
     private static function getFullClass(string $name, ?string $entity = null, bool $factory = false)

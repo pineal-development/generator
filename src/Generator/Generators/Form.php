@@ -63,7 +63,7 @@ class Form
             $this->addField($field->type, $field->name, $field->label, $field->options);
         }
 
-        $this->addFormField(new FormField(self::FIELD_TYPE_SUBMIT, 'save', '$this->translator->translate(\'default.form.submit\')'));
+        $this->addFormField(new FormField(self::FIELD_TYPE_SUBMIT, 'save', 'default.form.submit'));
     }
 
     public function output(): FileObject

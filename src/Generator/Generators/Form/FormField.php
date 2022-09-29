@@ -12,7 +12,7 @@ class FormField
 
     public string $label;
 
-    public FormFieldOptions $options;
+    public ?FormFieldOptions $options;
 
     public function __construct(string $type, string $name, string $label, ?FormFieldOptions $options = null)
     {

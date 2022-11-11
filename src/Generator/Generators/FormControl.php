@@ -65,7 +65,7 @@ class FormControl
         $class->addMethod('render')
             ->setReturnType('void')
             ->addBody('$this->template->setTranslator($this->translator);')
-            ->addBody('$this->template->setFile(dirname($this->getReflection()->getFileName()) . \'/templates/'.lcfirst($name).'FormControl.latte\');')
+            ->addBody('$this->template->setFile(dirname(self::getReflection()->getFileName()) . \'/templates/'.lcfirst($name).'FormControl.latte\');')
             ->addBody('$this->template->render();');
 
         return new FileObject(self::DIR_PATH . ($entity ? "$entity/" : ''), $name.'FormControl', $file, $entity);
@@ -73,12 +73,12 @@ class FormControl
 
     public static function generateTemplate(string $name, ?string $entity = null): void
     {
-        $dir = self::DIR_PATH.($entity ? "$entity/" : '/').'templates/';
+        $dir = self::DIR_PATH.($entity ? "$entity/" : '').'templates/';
         if (!FileGenerator::folderExist($dir)) {
             mkdir($dir, 0777, true);
         }
 
-        file_put_contents($dir . lcfirst($name.'FormControl.latte'), '{form ' . lcfirst($name.'Form') . '}'.PHP_EOL.'{/form}'.PHP_EOL);
+        file_put_contents($dir . lcfirst($name.'FormControl.latte'), FileGenerator::getLatteTemplate(lcfirst($name.'Form'), $name));
     }
 
     private static function getFullClass(string $name, ?string $entity = null, bool $factory = false)

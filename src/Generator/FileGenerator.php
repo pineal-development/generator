@@ -77,4 +77,26 @@ class FileGenerator
                 break;
         }
     }
+
+    public static function getLatteTemplate(string $control, ?string $title = 'Control', ?string $icon = 'user')
+    {
+        return <<<DOC
+        <div class="row">
+            <div class="col-12">
+                <div class="ws__card">
+                    <div class="ws__card-head">
+                        <i class="ws__card-icon">
+                            <i class="fa-solid fa-$icon"></i>
+                        </i>
+                        <p>$title</p>
+                    </div>
+                    <div class="ws__card-body">
+                        {control $control}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        DOC;
+    }
 }

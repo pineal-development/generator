@@ -19,8 +19,10 @@ class FormControl
         $file->setStrictTypes();
 
         $namespace = $file->addNamespace('App\UI\Control' . ($entity ? "\\$entity" : ''));
-        $namespace->addUse('App\Model\Database\Entity\\'.$name);
-        $namespace->addUse('App\Model\Database\Repository\\'.$name.'Repository');
+        if ($entity) {
+            $namespace->addUse('App\Model\Database\Entity\\'.$entity);
+            $namespace->addUse('App\Model\Database\Repository\\'.$entity.'Repository');
+        }
         $namespace->addUse(self::getFullClass($name, $entity));
         $namespace->addUse(self::getFullClass($name, $entity, true));
         $namespace->addUse('App\UI\Control\BaseControl');

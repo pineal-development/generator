@@ -29,7 +29,7 @@ class SaveTemplateCommand extends Command
         $this->addOption('alias', 'a', InputOption::VALUE_REQUIRED, 'Alias to use instead of the name defined inside the template.');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int
+    function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 

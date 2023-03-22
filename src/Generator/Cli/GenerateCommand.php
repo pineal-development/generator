@@ -69,7 +69,7 @@ class GenerateCommand extends Command
                 ] : ['name' => $name];
                 switch(strtolower($type)) {
                     case 'database':
-                    case 'd':
+                    case 'db':
                         $output->writeln("Generating entity <options=bold>{$name}</>...");
                         $output->writeln("Generating facade <options=bold>{$name}Facade</>...");
                         $output->writeln("Generating repository <options=bold>{$name}Repository</>...");
@@ -128,6 +128,14 @@ class GenerateCommand extends Command
                             ...$uiArgs,
                         ], $output);
                         break;
+                    case 'datagrid':
+                    case 'grid':
+                    case 'dg':
+                        $this->runCommand('gen:dg', [
+                            'command' => 'gen:dg',
+                            ...$uiArgs,
+                        ], $output);
+                        break;
                     default:
                         $io->error('Invalid type.');
                         $io->block('<comment>The type you entered is not recognized.</comment> Recognized types are: <options=bold>[database, entity, repository, facade, presenter, ui, control, form]</>', null, null, ' ', false, false);
@@ -164,7 +172,7 @@ class GenerateCommand extends Command
                 $io->newLine();
                 $io->block('Entity named ' . $chosenName . ' will be generated.', null, null, ' ', true, false);
 
-                if (in_array($chosenType, ['ui', 'form', 'control'])) {
+                if (in_array($chosenType, ['ui', 'form', 'control', 'datagrid'])) {
                     $entityQuestion = new Question('<comment><options=bold>Enter the Entity to which your component(s) belong</> (or leave empty):</comment> ');
                     $entityQuestion->setValidator($validateName);
 

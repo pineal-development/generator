@@ -22,6 +22,7 @@ class Application
             new GenerateControlCommand(),
             new GeneratePresenterCommand(),
             new GenerateFromTemplateCommand(),
+            new GenerateDataGridCommand(),
             new SaveTemplateCommand(),
             new LoadTemplateCommand(),
             new RemoveTemplateCommand(),

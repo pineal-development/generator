@@ -37,13 +37,13 @@ class FileGenerator
 
         file_put_contents(Path::safe($file->directory . $file->filename), $printer->printFile($file->contents));
 
-        if (stripos($file->filename, 'Facade') !== false) {
-            self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
-        } else if (stripos($file->filename, 'FormControlFactory') !== false) {
-            self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\Control\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
-        } else if (stripos($file->filename, 'FormFactory') !== false) {
-            self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\Form\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
-        }
+        // if (stripos($file->filename, 'Facade') !== false) {
+        //     self::addService($file->filename, self::FACADES_CONFIG, 'App\Model\Database\Facade\\' . str_replace('.php', '', $file->filename));
+        // } else if (stripos($file->filename, 'FormControlFactory') !== false) {
+        //     self::addService($file->filename, self::CONTROLS_CONFIG, 'App\UI\Control\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
+        // } else if (stripos($file->filename, 'FormFactory') !== false) {
+        //     self::addService($file->filename, self::FORMS_CONFIG, 'App\UI\Form\\'.($file->entity ?? '').'\\'. str_replace('.php', '', $file->filename), 'implement');
+        // }
     }
 
     public static function folderExist($folder)

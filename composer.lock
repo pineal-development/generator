@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cf598b6d092f33a279a772480160f13",
+    "content-hash": "e22a7e7cd6d5e456843c3fa11c4b97c1",
     "packages": [
         {
             "name": "matronator/parsem",

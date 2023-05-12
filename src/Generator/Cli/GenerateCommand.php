@@ -147,7 +147,7 @@ class GenerateCommand extends Command
                 $helper = $this->getHelper('question');
                 $selectType = new ChoiceQuestion(
                     '<comment><options=bold>What do you want to generate?</> (defaults to <options=bold>entity</>)</comment>',
-                    ['database', 'entity', 'repository', 'facade', 'presenter', 'ui', 'control', 'form'],
+                    ['database', 'entity', 'repository', 'facade', 'presenter', 'ui', 'control', 'form', 'datagrid'],
                     1,
                 );
                 $selectType->setErrorMessage('Option %s is invalid.');

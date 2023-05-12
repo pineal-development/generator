@@ -6,6 +6,7 @@ namespace Matronator\Generator\Cli;
 
 use Matronator\Generator\FileGenerator;
 use Matronator\Generator\Generators\DataGridControl;
+use Matronator\Generator\Generators\DataGridControlFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,8 +39,10 @@ class GenerateDataGridCommand extends Command
         }
 
         $output->writeln("Generating <options=bold>{$name}DataGrid</> to entity {$entity}...");
-        FileGenerator::writeFile(DataGridControl::generate($name, $entity));
-
+        $output->writeln("Generating <options=bold>{$name}DataGridFactory</> to entity {$entity}...");
+        FileGenerator::writeFile([DataGridControl::generate($name, $entity), DataGridControlFactory::generate($name, $entity)]);
+        
+        $output->writeln("Generating <options=bold>" . lcfirst($name) . "DataGridControl.latte</> to '{$entity}/templates'...");
         DataGridControl::generateTemplate($name, $entity);
 
         $output->writeln('<fg=green>Done!</>');

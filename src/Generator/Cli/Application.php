@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Matronator\Generator\Cli;
 
-use Symfony\Component\Console\Application as ConsoleApplication;
-
 class Application
 {
-    public ConsoleApplication $app;
+    public CustomApplication $app;
 
     public function __construct()
     {
-        $this->app = new ConsoleApplication('MTRGen', '1.4.1');
+        $this->app = new CustomApplication('MTRGen', '2.1.0');
         $this->app->addCommands([
             new GenerateCommand(),
             new GenerateEntityCommand(),

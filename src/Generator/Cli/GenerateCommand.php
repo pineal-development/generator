@@ -220,6 +220,12 @@ class GenerateCommand extends Command
                         'module' => $chosenModule,
                         'folder' => $chosenFolder,
                     ], $output);
+                } else {
+                    $this->runCommand('gen', [
+                        'command' => 'gen',
+                        '--type' => $chosenType,
+                        'name' => $chosenName,
+                    ], $output);
                 }
             }
         }
